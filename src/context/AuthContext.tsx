@@ -1,9 +1,12 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
-import type { ReactNode } from 'react'; // Corrigido: Importado apenas como tipo
-import type { AuthContextType, User } from '../types'; // Corrigido: Importado apenas como tipo
+import type { ReactNode } from 'react'; 
+import type { AuthContextType, User } from '../types'; 
 
 // O AuthContext é criado com valores iniciais que correspondem ao AuthContextType
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Interface para o dado de usuário bruto retornado pelo backend (AuthToken.user)
+// REMOVIDA DAQUI - Movida para Login.tsx
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -14,15 +17,17 @@ export const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) =
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Função para fazer login
-  const login = useCallback((newToken: string, userData: User) => {
+  // MUDANÇA: A função login agora aceita diretamente o objeto User final,
+  // correspondendo à definição em AuthContextType.
+  const login = useCallback((newToken: string, frontendUser: User) => {
+    
     // Salva o token e o usuário no estado
     setToken(newToken);
-    setUser(userData);
+    setUser(frontendUser);
 
     // Armazena no localStorage para persistência
     localStorage.setItem('@SORO:token', newToken);
-    localStorage.setItem('@SORO:user', JSON.stringify(userData));
+    localStorage.setItem('@SORO:user', JSON.stringify(frontendUser));
 
   }, []);
 
@@ -32,7 +37,6 @@ export const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) =
     setUser(null);
     localStorage.removeItem('@SORO:token');
     localStorage.removeItem('@SORO:user');
-    // Navegará automaticamente para a tela de login via React Router
   }, []);
 
   // Função para carregar os dados do usuário ao iniciar a aplicação
@@ -42,7 +46,7 @@ export const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) =
 
     if (storedToken && storedUser) {
       try {
-        const userData: User = JSON.parse(storedUser);
+        const userData: User = JSON.parse(storedUser); 
         setToken(storedToken);
         setUser(userData);
       } catch (error) {

@@ -1,0 +1,2612 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API S.O.R.O - Bombeiros",
+    "version": "1.0.0",
+    "description": "Documentação da API S.O.R.O. para gerenciamento de ocorrências, usuários, viaturas e recursos.",
+    "contact": {
+      "name": "Equipe Backend S.O.R.O.",
+      "email": "desenvolvimento@bombeiros.pe.gov.br"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api-bombeiros-s-o-r-o.onrender.com",
+      "description": "Servidor de Produção (Render)"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor de Desenvolvimento Local"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Autenticação",
+      "description": "Endpoints para registro e login de usuários"
+    },
+    {
+      "name": "Ocorrências",
+      "description": "Endpoints para gerenciamento de ocorrências (acessível por Analistas e Admins)."
+    },
+    {
+      "name": "Dashboard",
+      "description": "Endpoints para visualização de KPIs e dados analíticos."
+    },
+    {
+      "name": "Relatórios",
+      "description": "(Admin) Endpoints para exportação de dados em CSV ou PDF."
+    },
+    {
+      "name": "Gestão de Usuários",
+      "description": "(Admin) Endpoints para gerenciar usuários do sistema."
+    },
+    {
+      "name": "Admin: Municípios",
+      "description": "(Admin) Endpoints para gerenciar os municípios."
+    },
+    {
+      "name": "Admin: Bairros",
+      "description": "(Admin) Endpoints para gerenciar os bairros."
+    },
+    {
+      "name": "Admin: Classificação (Natureza, Grupo, Subgrupo)",
+      "description": "(Admin) Endpoints para gerenciar a hierarquia de classificação das ocorrências."
+    },
+    {
+      "name": "Admin: Formas de Acervo",
+      "description": "(Admin) Endpoints para gerenciar as formas de acionamento (ex: 193)."
+    },
+    {
+      "name": "Admin: Organização (Grupamentos e Unidades)",
+      "description": "(Admin) Endpoints para gerenciar a estrutura organizacional (Grupamentos e Unidades Operacionais)."
+    },
+    {
+      "name": "Admin: Viaturas",
+      "description": "(Admin) Endpoints para gerenciar as viaturas."
+    },
+    {
+      "name": "Auth",
+      "description": "Autenticação de Usuários"
+    },
+    {
+      "name": "Admin: Grupamentos",
+      "description": "(Admin) Endpoints para gerenciar os grupamentos."
+    },
+    {
+      "name": "Admin: Grupos",
+      "description": "(Admin) Endpoints para gerenciar os grupos."
+    },
+    {
+      "name": "Admin: Naturezas",
+      "description": "(Admin) Endpoints para gerenciar as naturezas de ocorrência."
+    },
+    {
+      "name": "Admin: Relatórios",
+      "description": "(Admin) Endpoints para exportação de relatórios."
+    },
+    {
+      "name": "Admin: Subgrupos",
+      "description": "(Admin) Endpoints para gerenciar os subgrupos."
+    },
+    {
+      "name": "Admin: Unidades Operacionais",
+      "description": "(Admin) Endpoints para gerenciar as unidades operacionais."
+    },
+    {
+      "name": "Admin: Usuários",
+      "description": "(Admin) Endpoints para gerenciar os usuários."
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token JWT obtido no login (Ex: Bearer eyJhbGci...)"
+      }
+    },
+    "schemas": {
+      "AuthLogin": {
+        "type": "object",
+        "required": [
+          "matricula",
+          "password"
+        ],
+        "properties": {
+          "matricula": {
+            "type": "string",
+            "example": "123456"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        }
+      },
+      "AuthRegister": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/UserInput"
+          }
+        ],
+        "properties": {
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "Senha do usuário, obrigatória para registro via API"
+          }
+        },
+        "required": [
+          "password"
+        ]
+      },
+      "AuthToken": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT de autenticação do usuário"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "required": [
+          "token",
+          "user"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "matricula": {
+            "type": "string"
+          },
+          "tipo_perfil": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "ANALISTA",
+              "CHEFE"
+            ]
+          },
+          "nome_guerra": {
+            "type": "string",
+            "nullable": true
+          },
+          "posto_grad": {
+            "type": "string",
+            "nullable": true
+          },
+          "id_unidade_operacional_fk": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "UserInput": {
+        "type": "object",
+        "required": [
+          "nome",
+          "email",
+          "matricula",
+          "tipo_perfil"
+        ],
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "Opcional no registro (será gerada e enviada por email). Obrigatória no login."
+          },
+          "matricula": {
+            "type": "string"
+          },
+          "tipo_perfil": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "ANALISTA",
+              "CHEFE"
+            ]
+          },
+          "nome_guerra": {
+            "type": "string",
+            "nullable": true
+          },
+          "posto_grad": {
+            "type": "string",
+            "nullable": true
+          },
+          "id_unidade_operacional_fk": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "UserUpdate": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "Nova senha (opcional)"
+          },
+          "matricula": {
+            "type": "string"
+          },
+          "tipo_perfil": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "ANALISTA",
+              "CHEFE"
+            ]
+          },
+          "nome_guerra": {
+            "type": "string",
+            "nullable": true
+          },
+          "posto_grad": {
+            "type": "string",
+            "nullable": true
+          },
+          "id_unidade_operacional_fk": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "Ocorrencia": {
+        "type": "object",
+        "properties": {
+          "id_ocorrencia": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nr_aviso": {
+            "type": "string",
+            "nullable": true
+          },
+          "data_acionamento": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hora_acionamento": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status_situacao": {
+            "type": "string",
+            "enum": [
+              "PENDENTE",
+              "EM_ANDAMENTO",
+              "CONCLUIDO",
+              "CANCELADO"
+            ]
+          },
+          "data_execucao_servico": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "relacionado_eleicao": {
+            "type": "boolean"
+          },
+          "id_subgrupo_fk": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id_bairro_fk": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id_forma_acervo_fk": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id_usuario_abertura_fk": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "OcorrenciaInput": {
+        "type": "object",
+        "required": [
+          "data_acionamento",
+          "hora_acionamento",
+          "id_subgrupo_fk",
+          "id_bairro_fk",
+          "id_forma_acervo_fk"
+        ],
+        "properties": {
+          "data_acionamento": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hora_acionamento": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id_subgrupo_fk": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id_bairro_fk": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id_forma_acervo_fk": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nr_aviso": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Grupamento": {
+        "type": "object",
+        "required": [
+          "nome_grupamento",
+          "sigla"
+        ],
+        "properties": {
+          "id_grupamento": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nome_grupamento": {
+            "type": "string",
+            "example": "Grupamento de Bombeiros Metropolitano"
+          },
+          "sigla": {
+            "type": "string",
+            "example": "GBM"
+          }
+        }
+      },
+      "UnidadeOperacional": {
+        "type": "object",
+        "required": [
+          "nome_unidade",
+          "id_grupamento_fk"
+        ],
+        "properties": {
+          "id_unidade": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nome_unidade": {
+            "type": "string",
+            "example": "Quartel Central do Recife (QCG)"
+          },
+          "endereco_base": {
+            "type": "string",
+            "nullable": true
+          },
+          "id_grupamento_fk": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "Viatura": {
+        "type": "object",
+        "required": [
+          "tipo_vt",
+          "numero_viatura",
+          "id_unidade_operacional_fk"
+        ],
+        "properties": {
+          "id_viatura": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tipo_vt": {
+            "type": "string",
+            "example": "Auto Bomba Tanque"
+          },
+          "numero_viatura": {
+            "type": "string",
+            "example": "ABT-01"
+          },
+          "id_unidade_operacional_fk": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "Natureza": {
+        "type": "object",
+        "required": [
+          "descricao"
+        ],
+        "properties": {
+          "id_natureza": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "descricao": {
+            "type": "string",
+            "example": "INCENDIO"
+          }
+        }
+      },
+      "Grupo": {
+        "type": "object",
+        "required": [
+          "descricao_grupo",
+          "id_natureza_fk"
+        ],
+        "properties": {
+          "id_grupo": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "descricao_grupo": {
+            "type": "string",
+            "example": "Incêndio em Edificação"
+          },
+          "id_natureza_fk": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "Subgrupo": {
+        "type": "object",
+        "required": [
+          "descricao_subgrupo",
+          "id_grupo_fk"
+        ],
+        "properties": {
+          "id_subgrupo": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "descricao_subgrupo": {
+            "type": "string",
+            "example": "Incêndio em Residência"
+          },
+          "id_grupo_fk": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "FormaAcervo": {
+        "type": "object",
+        "required": [
+          "descricao"
+        ],
+        "properties": {
+          "id_forma_acervo": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "descricao": {
+            "type": "string",
+            "example": "TELEFONE 193"
+          }
+        }
+      },
+      "Municipio": {
+        "type": "object",
+        "required": [
+          "nome_municipio"
+        ],
+        "properties": {
+          "id_municipio": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nome_municipio": {
+            "type": "string",
+            "example": "Recife"
+          }
+        }
+      },
+      "Bairro": {
+        "type": "object",
+        "required": [
+          "nome_bairro"
+        ],
+        "properties": {
+          "id_bairro": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nome_bairro": {
+            "type": "string",
+            "example": "Boa Viagem"
+          },
+          "regiao": {
+            "type": "string",
+            "nullable": true
+          },
+          "ais": {
+            "type": "string",
+            "nullable": true
+          },
+          "id_municipio_fk": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "SuccessDelete": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Recurso deletado com sucesso."
+          }
+        }
+      },
+      "Error400": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "message": {
+              "type": "string"
+            }
+          }
+        },
+        "example": [
+          {
+            "path": [
+              "body",
+              "email"
+            ],
+            "message": "O email é obrigatório"
+          }
+        ]
+      },
+      "Error401": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Acesso negado: nenhum token fornecido."
+          }
+        }
+      },
+      "Error403": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Acesso negado: rota exclusiva para administradores."
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Recurso não encontrado"
+          }
+        }
+      },
+      "Error409": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Já existe um recurso com estes dados."
+          }
+        }
+      }
+    },
+    "parameters": {
+      "dataInicio": {
+        "in": "query",
+        "name": "dataInicio",
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": "Filtrar por data de início (opcional)"
+      },
+      "dataFim": {
+        "in": "query",
+        "name": "dataFim",
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": "Filtrar por data de fim (opcional)"
+      },
+      "status": {
+        "in": "query",
+        "name": "status",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "PENDENTE",
+            "EM_ANDAMENTO",
+            "CONCLUIDO",
+            "CANCELADO"
+          ]
+        },
+        "description": "Filtrar por status (opcional)"
+      },
+      "bairroId": {
+        "in": "query",
+        "name": "bairroId",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": "ID do Bairro para filtrar (opcional)"
+      },
+      "subgrupoId": {
+        "in": "query",
+        "name": "subgrupoId",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": "ID do Subgrupo para filtrar (opcional)"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/v1/auth/register": {
+      "post": {
+        "summary": "Registra um novo usuário (Admin)",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRegister"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthToken"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflito (Usuário já existe).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error409"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "summary": "Login de usuário",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthLogin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login bem-sucedido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthToken"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciais inválidas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bairros": {
+      "post": {
+        "summary": "Cria um novo bairro (apenas Admin)",
+        "tags": [
+          "Admin: Bairros"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bairro"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Bairro criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bairro"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error403"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflito (bairro já existe).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error409"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Lista todos os bairros",
+        "tags": [
+          "Admin: Bairros"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de bairros.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Bairro"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bairros/{id}": {
+      "get": {
+        "summary": "Obtém um bairro pelo ID",
+        "tags": [
+          "Admin: Bairros"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID do bairro"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes do bairro.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bairro"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Bairro não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualiza um bairro pelo ID (apenas Admin)",
+        "tags": [
+          "Admin: Bairros"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID do bairro"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bairro"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bairro atualizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bairro"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error403"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Bairro não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deleta um bairro pelo ID (apenas Admin)",
+        "tags": [
+          "Admin: Bairros"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID do bairro"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bairro deletado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDelete"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error403"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Bairro não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/dashboard/ocorrencias-por-status": {
+      "get": {
+        "summary": "Obtém o número de ocorrências por status",
+        "tags": [
+          "Dashboard"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/dataInicio"
+          },
+          {
+            "$ref": "#/components/parameters/dataFim"
+          },
+          {
+            "$ref": "#/components/parameters/subgrupoId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados de ocorrências por status."
+          }
+        }
+      }
+    },
+    "/api/v2/dashboard/ocorrencias-por-tipo": {
+      "get": {
+        "summary": "Obtém o top 10 de ocorrências por tipo (Subgrupo)",
+        "tags": [
+          "Dashboard"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/dataInicio"
+          },
+          {
+            "$ref": "#/components/parameters/dataFim"
+          },
+          {
+            "$ref": "#/components/parameters/bairroId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados de ocorrências por tipo."
+          }
+        }
+      }
+    },
+    "/api/v2/dashboard/ocorrencias-por-bairro": {
+      "get": {
+        "summary": "Obtém o top 10 de ocorrências por bairro",
+        "tags": [
+          "Dashboard"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/dataInicio"
+          },
+          {
+            "$ref": "#/components/parameters/dataFim"
+          },
+          {
+            "$ref": "#/components/parameters/subgrupoId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados de ocorrências por bairro."
+          }
+        }
+      }
+    },
+    "/api/v2/dashboard/ocorrencias-por-municipio": {
+      "get": {
+        "summary": "(NOVO) Obtém ocorrências por município (Gráfico Pizza)",
+        "tags": [
+          "Dashboard"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/dataInicio"
+          },
+          {
+            "$ref": "#/components/parameters/dataFim"
+          },
+          {
+            "$ref": "#/components/parameters/subgrupoId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados de ocorrências por município."
+          }
+        }
+      }
+    },
+    "/api/v2/dashboard/ocorrencias-por-periodo": {
+      "get": {
+        "summary": "(NOVO) Obtém total de ocorrências por período (Gráfico Linha)",
+        "tags": [
+          "Dashboard"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "periodo",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "day",
+                "month"
+              ]
+            },
+            "description": "Agrupar por 'day' (dia) ou 'month' (mês). Padrão é 'day'."
+          },
+          {
+            "$ref": "#/components/parameters/dataInicio"
+          },
+          {
+            "$ref": "#/components/parameters/dataFim"
+          },
+          {
+            "$ref": "#/components/parameters/status"
+          },
+          {
+            "$ref": "#/components/parameters/bairroId"
+          },
+          {
+            "$ref": "#/components/parameters/subgrupoId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de totais por período."
+          }
+        }
+      }
+    },
+    "/api/v2/dashboard/avg-completion-time": {
+      "get": {
+        "summary": "(NOVO) Obtém tempo médio (em horas) de conclusão por tipo (Gráfico Barra)",
+        "tags": [
+          "Dashboard"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/dataInicio"
+          },
+          {
+            "$ref": "#/components/parameters/dataFim"
+          },
+          {
+            "$ref": "#/components/parameters/bairroId"
+          },
+          {
+            "$ref": "#/components/parameters/subgrupoId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de tipos com seu tempo médio de conclusão em horas."
+          }
+        }
+      }
+    },
+    "/api/v1/formas-acervo": {
+      "post": {
+        "summary": "Cria uma nova forma de acervo (apenas Admin)",
+        "tags": [
+          "Admin: Formas de Acervo"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormaAcervo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Forma de acervo criada com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "409": {
+            "description": "Conflito (forma já existe)."
+          }
+        }
+      },
+      "get": {
+        "summary": "Lista todas as formas de acervo",
+        "tags": [
+          "Admin: Formas de Acervo"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de formas de acervo.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FormaAcervo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado."
+          }
+        }
+      }
+    },
+    "/api/v1/formas-acervo/{id}": {
+      "delete": {
+        "summary": "Deleta uma forma de acervo pelo ID (apenas Admin)",
+        "tags": [
+          "Admin: Formas de Acervo"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID da forma de acervo"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Forma de acervo deletada com sucesso."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "404": {
+            "description": "Forma de acervo não encontrada."
+          }
+        }
+      }
+    },
+    "/api/v1/grupamentos": {
+      "post": {
+        "summary": "Cria um novo grupamento (apenas Admin)",
+        "tags": [
+          "Admin: Grupamentos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Grupamento"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Grupamento criado com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "409": {
+            "description": "Conflito (grupamento já existe)."
+          }
+        }
+      },
+      "get": {
+        "summary": "Lista todos os grupamentos",
+        "tags": [
+          "Admin: Grupamentos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de grupamentos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Grupamento"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado."
+          }
+        }
+      }
+    },
+    "/api/v1/grupamentos/{id}": {
+      "delete": {
+        "summary": "Deleta um grupamento pelo ID (apenas Admin)",
+        "tags": [
+          "Admin: Grupamentos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID do grupamento"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Grupamento deletado com sucesso."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "404": {
+            "description": "Grupamento não encontrado."
+          }
+        }
+      }
+    },
+    "/api/v1/grupos": {
+      "post": {
+        "summary": "Cria um novo grupo (apenas Admin)",
+        "tags": [
+          "Admin: Grupos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Grupo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Grupo criado com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "409": {
+            "description": "Conflito (grupo já existe)."
+          }
+        }
+      },
+      "get": {
+        "summary": "Lista todos os grupos",
+        "tags": [
+          "Admin: Grupos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de grupos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Grupo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado."
+          }
+        }
+      }
+    },
+    "/api/v1/grupos/{id}": {
+      "delete": {
+        "summary": "Deleta um grupo pelo ID (apenas Admin)",
+        "tags": [
+          "Admin: Grupos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID do grupo"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Grupo deletado com sucesso."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "404": {
+            "description": "Grupo não encontrado."
+          }
+        }
+      }
+    },
+    "/api/v1/municipios": {
+      "post": {
+        "summary": "Cria um novo município (apenas Admin)",
+        "tags": [
+          "Admin: Municípios"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Municipio"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Município criado com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "409": {
+            "description": "Conflito (município já existe)."
+          }
+        }
+      },
+      "get": {
+        "summary": "Lista todos os municípios",
+        "tags": [
+          "Admin: Municípios"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de municípios.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Municipio"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado."
+          }
+        }
+      }
+    },
+    "/api/v1/municipios/{id}": {
+      "get": {
+        "summary": "Obtém um município pelo ID",
+        "tags": [
+          "Admin: Municípios"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID do município"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes do município."
+          },
+          "404": {
+            "description": "Município não encontrado."
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualiza um município pelo ID (apenas Admin)",
+        "tags": [
+          "Admin: Municípios"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID do município"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Municipio"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Município atualizado com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "404": {
+            "description": "Município não encontrado."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deleta um município pelo ID (apenas Admin)",
+        "tags": [
+          "Admin: Municípios"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID do município"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Município deletado com sucesso."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "404": {
+            "description": "Município não encontrado."
+          }
+        }
+      }
+    },
+    "/api/v1/naturezas": {
+      "post": {
+        "summary": "Cria uma nova natureza (apenas Admin)",
+        "tags": [
+          "Admin: Naturezas"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Natureza"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Natureza criada com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "409": {
+            "description": "Conflito (natureza já existe)."
+          }
+        }
+      },
+      "get": {
+        "summary": "Lista todas as naturezas",
+        "tags": [
+          "Admin: Naturezas"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de naturezas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Natureza"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado."
+          }
+        }
+      }
+    },
+    "/api/v1/naturezas/{id}": {
+      "delete": {
+        "summary": "Deleta uma natureza pelo ID (apenas Admin)",
+        "tags": [
+          "Admin: Naturezas"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID da natureza"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Natureza deletada com sucesso."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "404": {
+            "description": "Natureza não encontrada."
+          }
+        }
+      }
+    },
+    "/api/v1/ocorrencias": {
+      "post": {
+        "summary": "Cria uma nova ocorrência",
+        "tags": [
+          "Ocorrências"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OcorrenciaInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ocorrência criada com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação."
+          },
+          "401": {
+            "description": "Não autorizado."
+          }
+        }
+      },
+      "get": {
+        "summary": "Lista todas as ocorrências com filtros opcionais",
+        "tags": [
+          "Ocorrências"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDENTE",
+                "EM_ANDAMENTO",
+                "CONCLUIDO",
+                "CANCELADO"
+              ]
+            },
+            "description": "Filtrar por status (opcional)"
+          },
+          {
+            "in": "query",
+            "name": "subgrupoId",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Filtrar por Subgrupo (opcional)"
+          },
+          {
+            "in": "query",
+            "name": "bairroId",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Filtrar por Bairro (opcional)"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Número da página (opcional, padrão 1)"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Número máximo de itens por página (opcional, padrão 10)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de ocorrências."
+          },
+          "401": {
+            "description": "Não autorizado."
+          }
+        }
+      }
+    },
+    "/api/v1/ocorrencias/{id}": {
+      "get": {
+        "summary": "Obtém uma ocorrência pelo ID",
+        "tags": [
+          "Ocorrências"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID da ocorrência"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes da ocorrência."
+          },
+          "404": {
+            "description": "Ocorrência não encontrada."
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualiza uma ocorrência pelo ID (apenas o criador)",
+        "tags": [
+          "Ocorrências"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID da ocorrência"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status_situacao": {
+                    "type": "string",
+                    "enum": [
+                      "PENDENTE",
+                      "EM_ANDAMENTO",
+                      "CONCLUIDO",
+                      "CANCELADO"
+                    ]
+                  },
+                  "data_execucao_servico": {
+                    "type": "string",
+                    "format": "date-time",
+                    "nullable": true
+                  },
+                  "relacionado_eleicao": {
+                    "type": "boolean"
+                  },
+                  "nr_aviso": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ocorrência atualizada com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação."
+          },
+          "403": {
+            "description": "Acesso negado (não é o criador)."
+          },
+          "404": {
+            "description": "Ocorrência não encontrada."
+          }
+        }
+      }
+    },
+    "/api/v1/ocorrencias/{id}/midia": {
+      "post": {
+        "summary": "Faz upload de uma nova mídia (imagem/vídeo) para uma ocorrência",
+        "tags": [
+          "Ocorrências"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID da ocorrência"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "midia": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "O arquivo de mídia (imagem ou vídeo)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Mídia enviada com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação ou nenhum arquivo enviado."
+          },
+          "404": {
+            "description": "Ocorrência não encontrada."
+          }
+        }
+      }
+    },
+    "/api/v1/relatorios": {
+      "get": {
+        "summary": "Exporta um relatório de ocorrências em formato Excel (apenas Admin)",
+        "tags": [
+          "Admin: Relatórios"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "ano",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Ano para filtrar (opcional)"
+          },
+          {
+            "in": "query",
+            "name": "mes",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Mês para filtrar (opcional)"
+          },
+          {
+            "in": "query",
+            "name": "unidadeOperacionalId",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID da Unidade Operacional para filtrar (opcional)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Relatório gerado com sucesso. Retorna um ficheiro binário (Excel).",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          }
+        }
+      }
+    },
+    "/api/v1/subgrupos": {
+      "post": {
+        "summary": "Cria um novo subgrupo (apenas Admin)",
+        "tags": [
+          "Admin: Subgrupos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Subgrupo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Subgrupo criado com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "409": {
+            "description": "Conflito (subgrupo já existe)."
+          }
+        }
+      },
+      "get": {
+        "summary": "Lista todos os subgrupos",
+        "tags": [
+          "Admin: Subgrupos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de subgrupos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Subgrupo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado."
+          }
+        }
+      }
+    },
+    "/api/v1/subgrupos/{id}": {
+      "delete": {
+        "summary": "Deleta um subgrupo pelo ID (apenas Admin)",
+        "tags": [
+          "Admin: Subgrupos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID do subgrupo"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subgrupo deletado com sucesso."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "404": {
+            "description": "Subgrupo não encontrado."
+          }
+        }
+      }
+    },
+    "/api/v1/unidades-operacionais": {
+      "post": {
+        "summary": "Cria uma nova unidade operacional (apenas Admin)",
+        "tags": [
+          "Admin: Unidades Operacionais"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnidadeOperacional"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Unidade operacional criada com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "409": {
+            "description": "Conflito (unidade já existe)."
+          }
+        }
+      },
+      "get": {
+        "summary": "Lista todas as unidades operacionais",
+        "tags": [
+          "Admin: Unidades Operacionais"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de unidades operacionais.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UnidadeOperacional"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado."
+          }
+        }
+      }
+    },
+    "/api/v1/unidades-operacionais/{id}": {
+      "delete": {
+        "summary": "Deleta uma unidade operacional pelo ID (apenas Admin)",
+        "tags": [
+          "Admin: Unidades Operacionais"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID da unidade operacional"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Unidade operacional deletada com sucesso."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "404": {
+            "description": "Unidade operacional não encontrada."
+          }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "summary": "Lista todos os usuários (apenas Admin)",
+        "tags": [
+          "Admin: Usuários"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de usuários."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          }
+        }
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "summary": "Obtém um usuário pelo ID (apenas Admin)",
+        "tags": [
+          "Admin: Usuários"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID do usuário"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes do usuário."
+          },
+          "404": {
+            "description": "Usuário não encontrado."
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualiza um usuário pelo ID (apenas Admin)",
+        "tags": [
+          "Admin: Usuários"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID do usuário"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "404": {
+            "description": "Usuário não encontrado."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deleta um usuário pelo ID (apenas Admin)",
+        "tags": [
+          "Admin: Usuários"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID do usuário"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário deletado com sucesso."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "404": {
+            "description": "Usuário não encontrado."
+          }
+        }
+      }
+    },
+    "/api/v1/viaturas": {
+      "post": {
+        "summary": "Cria uma nova viatura (apenas Admin)",
+        "tags": [
+          "Admin: Viaturas"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Viatura"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Viatura criada com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "409": {
+            "description": "Conflito (viatura já existe)."
+          }
+        }
+      },
+      "get": {
+        "summary": "Lista todas as viaturas",
+        "tags": [
+          "Admin: Viaturas"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de viaturas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Viatura"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado."
+          }
+        }
+      }
+    },
+    "/api/v1/viaturas/{id}": {
+      "delete": {
+        "summary": "Deleta uma viatura pelo ID (apenas Admin)",
+        "tags": [
+          "Admin: Viaturas"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID da viatura"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Viatura deletada com sucesso."
+          },
+          "403": {
+            "description": "Acesso negado (não é Admin)."
+          },
+          "404": {
+            "description": "Viatura não encontrada."
+          }
+        }
+      }
+    }
+  }
+}

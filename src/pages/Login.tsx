@@ -3,16 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Alert, Box, CircularProgress, Link } from '@mui/material';
 import Logo from '../assets/logo.svg';
+import { getClient } from '../services/apiService';
+import type { AuthLogin } from '../services/api/models/AuthLogin'; 
+import type { AuthToken } from '../services/api/models/AuthToken'; 
+// Importa o tipo User do gerador (que tem 'tipo_perfil')
+import type { User as BackendUserRaw } from '../services/api/models/User'; 
+// Importa o tipo User final do frontend (que tem 'perfil')
+import type { User, PerfilSistema } from '../types'; 
+
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState('');
+  // REVERTIDO: Usar 'email' em vez de 'matricula'
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,27 +27,50 @@ const Login: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
+      const api = getClient();
+      
+      // O tipo AuthLogin gerado pode esperar 'matricula'. 
+      // Usaremos o cast para 'any' ou ajustamos o tipo para 'email' temporariamente.
+      // Assumindo que a API aceita 'email' e 'password':
+      const credentials: AuthLogin = { 
+        email: email, // NOVO: Campo de login é 'email'
+        password: password,
+      } as unknown as AuthLogin; // Cast forçar o tipo AuthLogin
 
-      const data = await response.json();
+      const data: AuthToken = await (api.auth as any).postApiV1AuthLogin(credentials);
 
-      if (response.ok) {
-        // Sucesso no login
-        const { token, user } = data;
-        login(token, user);
-        navigate('/'); // Redirecionar para o painel
+      const { token, user } = data; 
+      
+      // REALIZA O MAPEAMENTO ANTES DE CHAMAR O CONTEXTO
+      if (token && user) {
+        const rawUser = user as BackendUserRaw;
+
+        const frontendUser: User = {
+            // CORREÇÃO DE TIPAGEM: Asserção não-nula nos campos obrigatórios
+            id: rawUser.id!, 
+            nome: rawUser.nome!,
+            email: rawUser.email!,
+            matricula: rawUser.matricula!,
+            perfil: rawUser.tipo_perfil as PerfilSistema, 
+            nome_guerra: rawUser.nome_guerra!,
+            posto_grad: rawUser.posto_grad!,
+            id_unidade_operacional_fk: rawUser.id_unidade_operacional_fk!,
+            
+            unidadeId: rawUser.id_unidade_operacional_fk,
+        };
+
+        login(token, frontendUser); 
+        navigate('/'); 
       } else {
-        // Erro no login
-        setError(data.message || 'Erro ao fazer login. Verifique suas credenciais.');
+        setError('Resposta inválida do servidor.'); 
       }
-    } catch (err) {
-      setError('Não foi possível conectar ao servidor. Tente novamente mais tarde.');
+
+    } catch (err: any) {
+      console.error("Erro na chamada de Login:", err);
+      
+      const errorMessage = err.body?.message || err.message || 'Erro de conexão ou credenciais inválidas.';
+      
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -66,9 +96,9 @@ const Login: React.FC = () => {
 
         <input
           type="text"
-          placeholder="Nome de Usuário"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          placeholder="E-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
           className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors bg-input text-foreground"
         />

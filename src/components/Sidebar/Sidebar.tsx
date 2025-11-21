@@ -1,9 +1,10 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import Logo from '../../assets/logo-chama.svg';
-import { navigationItems, secondaryNavigationItems } from '../../config/navigationItens';
+// CORREÇÃO: Usando 'navigationItens' (com I) ou 'navigationItems' (com I)
+import { navigationItems, secondaryNavigationItems } from '../../config/navigationItens'; 
 import { useAuth } from '../../context/AuthContext';
-import type { MenuItem } from '../../types'; // CORREÇÃO APLICADA AQUI
+import type { MenuItem } from '../../types';
 
 // Componente auxiliar para renderizar itens de navegação
 const NavigationItem: React.FC<{ item: MenuItem; isActive: boolean }> = ({ item, isActive }) => {
@@ -36,7 +37,7 @@ const Sidebar: React.FC = () => {
   const filterItems = (items: MenuItem[]) => {
     return items.filter(item => 
       !item.roles || 
-      item.roles.includes(user?.perfil || 'ANALISTA') // Assume OPERADOR se não houver perfil
+      item.roles.includes(user?.perfil || 'ANALISTA') // Assume ANALISTA (OP) como padrão
     );
   };
 
