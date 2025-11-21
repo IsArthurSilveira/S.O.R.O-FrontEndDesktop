@@ -1,105 +1,87 @@
-import React from 'react';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
-import { CircularProgress } from '@mui/material'; // 'Box' foi removido aqui
-
-// Importação das Páginas e Componentes de Layout
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import PlaceHolderPage from './pages/PlaceHolderPage';
-import Logout from './pages/Logout';
-import EsqueciSenha from './pages/EsqueciSenha';
-import VerificacaoCodigo from './pages/VerificacaoCodigo';
-
+// src/App.tsx
+import { useState } from 'react';
+// Removemos a importação de "Router" (ou BrowserRouter), deixando apenas os componentes de rotas
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom'; 
 import Sidebar from './components/Sidebar/Sidebar';
 import Header from './components/Header/Header';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import EsqueciSenha from './pages/EsqueciSenha';
+import VerificacaoCodigo from './pages/VerificacaoCodigo';
+import Logout from './pages/Logout';
+import PlaceHolderPage from './pages/PlaceHolderPage';
 
-// --- Componentes de Roteamento ---
+// Apenas useAuth é necessário, pois os Context Providers estão em main.tsx
+import { useAuth } from './context/AuthContext'; 
 
-// Rota Privada: Exige autenticação e aplica o layout com Sidebar e Header
-const PrivateRoutes: React.FC = () => {
-  const { isAuthenticated, isLoading } = useAuth();
 
-  if (isLoading) {
+// 1. Componente de Layout Privado (sem <Routes> internas)
+const PrivateLayout: React.FC = () => {
+    const { isAuthenticated, isLoading } = useAuth();
+    const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+
+    if (isLoading) {
+        return (
+            <div className="flex h-screen w-screen items-center justify-center bg-background">
+                <p className="text-xl font-semibold text-foreground">Carregando S.O.R.O...</p>
+            </div>
+        );
+    }
+    
+    // Se não estiver autenticado, redireciona para a rota /login
+    if (!isAuthenticated) { 
+        // Usamos Navigate para redirecionar o usuário
+        return <Navigate to="/login" replace />;
+    }
+
+    const contentMargin = isSidebarExpanded ? 'sm:ml-64' : 'sm:ml-20';
+
     return (
-      <div className="flex justify-center items-center min-h-screen bg-background">
-        <CircularProgress color="primary" />
-      </div>
+        <div className="flex min-h-screen bg-background text-foreground">
+            <Sidebar 
+                expanded={isSidebarExpanded} 
+                setExpanded={setIsSidebarExpanded}
+            />
+            
+            <div className={`flex-1 transition-all duration-300 ${contentMargin}`}>
+                <Header />
+                <main className="p-6">
+                    {/* <Outlet /> renderiza a rota filha correspondente */}
+                    <Outlet /> 
+                </main>
+            </div>
+        </div>
     );
-  }
-
-  // Se não estiver autenticado, redireciona para o login
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar />
-      <div className="flex-1 ml-64 flex flex-col"> {/* Margem para a Sidebar */}
-        <Header />
-        <main className="flex-1 p-0 overflow-auto">
-          {/* O Outlet renderizará o componente da rota aninhada (Ex: Dashboard) */}
-          <Outlet />
-        </main>
-      </div>
-    </div>
-  );
 };
 
-// Rota Pública: Não exige autenticação. Se autenticado, redireciona para o Dashboard.
-const PublicRoutes: React.FC = () => {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-background">
-        <CircularProgress color="primary" />
-      </div>
-    );
-  }
-
-  // Se autenticado e tentando acessar uma rota pública, redireciona para o Dashboard
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-
-  // O Outlet renderizará o componente da rota pública aninhada (Ex: Login)
-  return <Outlet />;
-};
-
-
-// --- Componente Principal App ---
-
+// Componente principal: AGORA RENDERIZA APENAS O BLOCO <Routes>
 const App: React.FC = () => {
   return (
+    // REMOVIDO: <Router> e os Providers de Contexto
     <Routes>
-      {/* Rotas Públicas */}
-      <Route element={<PublicRoutes />}>
+        
+        {/* ROTAS PÚBLICAS */}
         <Route path="/login" element={<Login />} />
         <Route path="/esqueci-senha" element={<EsqueciSenha />} />
         <Route path="/verificacao-codigo" element={<VerificacaoCodigo />} />
-      </Route>
-      
-      {/* Rota de Logout (sem layout) */}
-      <Route path="/logout" element={<Logout />} />
-
-      {/* Rotas Privadas (Exigem Autenticação e usam o Layout) */}
-      <Route element={<PrivateRoutes />}>
-        {/* Rotas aninhadas com o layout */}
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/logout" element={<Logout />} />
         
-        {/* Exemplo de outras rotas que usarão PlaceHolder por enquanto */}
-        <Route path="/ocorrencias" element={<PlaceHolderPage />} />
-        <Route path="/nova-ocorrencia" element={<PlaceHolderPage />} />
-        <Route path="/gerenciamento" element={<PlaceHolderPage />} />
-        <Route path="/usuarios" element={<PlaceHolderPage />} />
-        <Route path="/auditoria" element={<PlaceHolderPage />} />
-        <Route path="/configuracoes" element={<PlaceHolderPage />} />
-      </Route>
+        {/* ROTAS PRIVADAS (Aninhamento) */}
+        {/* path="/" define o layout base para todas as rotas filhas */}
+        <Route path="/" element={<PrivateLayout />}>
+            {/* Rota principal (índice) do layout privado: / */}
+            <Route index element={<Dashboard />} /> 
+            <Route path="dashboard" element={<Dashboard />} />
+            
+            {/* Rotas de Exemplo (Caminhos relativos) */}
+            <Route path="nova-ocorrencia" element={<PlaceHolderPage />} />
+            <Route path="ocorrencias" element={<PlaceHolderPage />} />
+            <Route path="gerenciamento" element={<PlaceHolderPage />} />
+            <Route path="usuarios" element={<PlaceHolderPage />} />
+            <Route path="auditoria" element={<PlaceHolderPage />} />
+            <Route path="configuracoes" element={<PlaceHolderPage />} />
 
-      {/* Rota 404 - Redireciona para a raiz ou login */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
     </Routes>
   );
 };

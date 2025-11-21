@@ -9,12 +9,13 @@ import SairIcon from '../assets/Icons/sair.svg';
 import type { MenuItem } from '../types';
 import type { PerfilSistema } from '../types'; // Importa o tipo unificado
 
+// Combina a lista principal e secundária em uma única lista
 export const navigationItems: MenuItem[] = [
   {
     title: 'Painel',
-    href: '/',
+    href: '/', // Mantido o caminho raiz para o dashboard
     icon: DashboardIcon,
-    roles: ['ADMIN', 'ANALISTA', 'CHEFE'] as PerfilSistema[], // ADMIN, ANALISTA (OP), CHEFE (SUP)
+    roles: ['ADMIN', 'ANALISTA', 'CHEFE'] as PerfilSistema[],
   },
   {
     title: 'Nova Ocorrência',
@@ -32,19 +33,19 @@ export const navigationItems: MenuItem[] = [
     title: 'Dados Mestres',
     href: '/gerenciamento',
     icon: DadosMestresIcon,
-    roles: ['ADMIN'], // Apenas ADMIN
+    roles: ['ADMIN'] as PerfilSistema[], 
   },
   {
     title: 'Usuários',
     href: '/usuarios',
     icon: UsuariosIcon,
-    roles: ['ADMIN', 'CHEFE'] as PerfilSistema[], // ADMIN e CHEFE (ex-SUPERVISOR)
+    roles: ['ADMIN', 'CHEFE'] as PerfilSistema[], 
   },
   {
     title: 'Auditoria',
     href: '/auditoria',
     icon: AuditoriaIcon,
-    roles: ['ADMIN'],
+    roles: ['ADMIN'] as PerfilSistema[],
   },
   {
     title: 'Configurações',
@@ -52,9 +53,7 @@ export const navigationItems: MenuItem[] = [
     icon: ConfiguracoesIcon,
     roles: ['ADMIN', 'ANALISTA', 'CHEFE'] as PerfilSistema[],
   },
-];
-
-export const secondaryNavigationItems: MenuItem[] = [
+  // Item de navegação secundária movido para a lista principal
   {
     title: 'Sair',
     href: '/logout',
@@ -62,3 +61,6 @@ export const secondaryNavigationItems: MenuItem[] = [
     roles: ['ADMIN', 'ANALISTA', 'CHEFE'] as PerfilSistema[],
   },
 ];
+
+// Removemos a lista secundária, pois ela foi incorporada acima
+export const secondaryNavigationItems: MenuItem[] = [];
