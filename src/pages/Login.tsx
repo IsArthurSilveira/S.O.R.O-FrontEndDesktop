@@ -40,7 +40,7 @@ const Login: React.FC = () => {
         password: password,
       } as unknown as AuthLogin; // Cast forçar o tipo AuthLogin
 
-      const data: AuthToken = await (api.auth as any).postApiV1AuthLogin(credentials);
+      const data: AuthToken = await (api.auth as any).postApiV3AuthLogin(credentials);
 
       const { token, user } = data; 
       

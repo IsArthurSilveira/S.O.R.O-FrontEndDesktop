@@ -15,12 +15,14 @@ export class AuthService {
      * @returns AuthToken Usuário criado com sucesso.
      * @throws ApiError
      */
-    public postApiV1AuthRegister(
+    // [CORREÇÃO URL] Endpoint atualizado de V1 para V3
+    public postApiV3AuthRegister(
         requestBody: AuthRegister,
     ): CancelablePromise<AuthToken> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/api/v1/auth/register',
+            // URL ATUALIZADA: Uso do prefixo de versão '/api/v3'
+            url: '/api/v3/auth/register',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -35,12 +37,14 @@ export class AuthService {
      * @returns AuthToken Login bem-sucedido.
      * @throws ApiError
      */
-    public postApiV1AuthLogin(
+    // [CORREÇÃO URL] Endpoint atualizado de V1 para V3
+    public postApiV3AuthLogin(
         requestBody: AuthLogin,
     ): CancelablePromise<AuthToken> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/api/v1/auth/login',
+            // URL ATUALIZADA: Uso do prefixo de versão '/api/v3'
+            url: '/api/v3/auth/login',
             body: requestBody,
             mediaType: 'application/json',
             errors: {

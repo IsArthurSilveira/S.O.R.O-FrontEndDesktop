@@ -4,7 +4,8 @@
 /* eslint-disable */
 import type { BaseHttpRequest } from './core/BaseHttpRequest';
 import type { OpenAPIConfig } from './core/OpenAPI';
-import { FetchHttpRequest } from './core/FetchHttpRequest';
+// Correção na linha 7: Alteração de importação nomeada para importação default.
+import FetchHttpRequest from './core/FetchHttpRequest';
 import { AdminBairrosService } from './services/AdminBairrosService';
 import { AdminFormasDeAcervoService } from './services/AdminFormasDeAcervoService';
 import { AdminGrupamentosService } from './services/AdminGrupamentosService';
@@ -64,4 +65,3 @@ export class ApiClient {
         this.ocorrNcias = new OcorrNciasService(this.request);
     }
 }
-
