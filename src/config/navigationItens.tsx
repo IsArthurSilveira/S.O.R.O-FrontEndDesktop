@@ -12,7 +12,7 @@ import type { PerfilSistema } from '../types'; // Importa o tipo unificado
 // Combina a lista principal e secundária em uma única lista
 export const navigationItems: MenuItem[] = [
   {
-    title: 'Painel',
+    title: 'Painel de Controle',
     href: '/', // Mantido o caminho raiz para o dashboard
     icon: DashboardIcon,
     roles: ['ADMIN', 'ANALISTA', 'CHEFE'] as PerfilSistema[],

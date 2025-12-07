@@ -54,7 +54,7 @@ export default function Sidebar({ expanded = false, setExpanded = () => {} }: Si
     >
       
       {/* Profile Section (Otimização Máxima do Espaço Vertical) */}
-      <div className={`flex items-center px-4 gap-3 top-0 h-20 border-b border-[rgba(6,28,67,0.24)] 
+      <div className={`flex items-center px-4 gap-3.5 top-0 h-20 border-b border-[rgba(6,28,67,0.24)] 
           ${!expanded ? 'justify-center py-2' : 'py-1'} 
       `}>
           {/* Container do ícone (Mantido w-10 h-10) */}
