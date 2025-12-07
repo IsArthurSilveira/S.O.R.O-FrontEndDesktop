@@ -5,10 +5,28 @@ import type { Socket } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 import type { SocketContextType } from '../types'; 
 
-// URL da API (deve ser a raiz do servidor, como 'https://api-bombeiros-s-o-r-o.onrender.com')
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-// Garante que o SOCKET_URL seja apenas o domínio sem /api ou /v1.
-const SOCKET_URL = BASE_URL.split('/api')[0];
+// URL da API (deve ser a URL completa, ex: 'https://api-s-o-r-o.onrender.com/api/v3')
+// Adicionado um path completo ao fallback de localhost para refletir a nova estrutura da API
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v3';
+
+// CORREÇÃO CRÍTICA: Extrai a ORIGEM (protocolo + host) de forma robusta usando a classe URL.
+// Isso evita erros de parsing como "ws://https/".
+let SOCKET_URL: string;
+try {
+    // 1. Cria um objeto URL a partir da BASE_URL (remove barras finais desnecessárias antes de parsear)
+    const url = new URL(BASE_URL.replace(/\/+$/, '')); 
+    // 2. A propriedade 'origin' retorna o protocolo, hostname e porta (ex: https://dominio.com)
+    SOCKET_URL = url.origin; 
+    
+    // DEBUG: Se você quiser garantir que a URL correta está sendo usada, pode descomentar:
+    // console.log("SOCKET_URL extraída:", SOCKET_URL);
+
+} catch (error) {
+    // Fallback de segurança em caso de URL de API completamente inválida
+    console.error("Erro fatal ao parsear BASE_URL para Socket.IO. Usando BASE_URL original.", error);
+    SOCKET_URL = BASE_URL; 
+}
+
 
 export const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
@@ -31,7 +49,7 @@ export const SocketContextProvider: React.FC<SocketProviderProps> = ({ children 
         setSocket(null);
       }
 
-      // Conecta ao servidor Socket.IO
+      // Conecta ao servidor Socket.IO, usando a URL de ORIGEM
       newSocket = io(SOCKET_URL, {
         transports: ['websocket'], // Força o uso de WebSocket
         forceNew: true, // Garante que uma nova instância seja criada, ignorando pools
