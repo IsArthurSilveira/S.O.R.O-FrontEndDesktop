@@ -13,12 +13,12 @@ export class AdminSubgruposService {
      * @returns any Subgrupo criado com sucesso.
      * @throws ApiError
      */
-    public postApiV1Subgrupos(
+    public postApiv3Subgrupos(
         requestBody: Subgrupo,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/api/v1/subgrupos',
+            url: '/api/v3/subgrupos',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -33,10 +33,10 @@ export class AdminSubgruposService {
      * @returns Subgrupo Lista de subgrupos.
      * @throws ApiError
      */
-    public getApiV1Subgrupos(): CancelablePromise<Array<Subgrupo>> {
+    public getApiv3Subgrupos(): CancelablePromise<Array<Subgrupo>> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/api/v1/subgrupos',
+            url: '/api/v3/subgrupos',
             errors: {
                 401: `Não autorizado.`,
             },
@@ -48,12 +48,12 @@ export class AdminSubgruposService {
      * @returns any Subgrupo deletado com sucesso.
      * @throws ApiError
      */
-    public deleteApiV1Subgrupos(
+    public deleteApiv3Subgrupos(
         id: string,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/api/v1/subgrupos/{id}',
+            url: '/api/v3/subgrupos/{id}',
             path: {
                 'id': id,
             },

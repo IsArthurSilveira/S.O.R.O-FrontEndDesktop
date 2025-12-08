@@ -13,7 +13,7 @@ export class OcorrNciasService {
      * @returns any Ocorrência criada com sucesso.
      * @throws ApiError
      */
-    public postApiV1Ocorrencias(
+    public postApiv3Ocorrencias(
         requestBody: OcorrenciaInput,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
@@ -37,7 +37,7 @@ export class OcorrNciasService {
      * @returns any Lista de ocorrências.
      * @throws ApiError
      */
-    public getApiV1Ocorrencias(
+    public getApiv3Ocorrencias(
         status?: 'PENDENTE' | 'EM_ANDAMENTO' | 'CONCLUIDO' | 'CANCELADO',
         subgrupoId?: string,
         bairroId?: string,
@@ -65,7 +65,7 @@ export class OcorrNciasService {
      * @returns any Detalhes da ocorrência.
      * @throws ApiError
      */
-    public getApiV1Ocorrencias1(
+    public getApiv3Ocorrencias1(
         id: string,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
@@ -86,7 +86,7 @@ export class OcorrNciasService {
      * @returns any Ocorrência atualizada com sucesso.
      * @throws ApiError
      */
-    public putApiV1Ocorrencias(
+    public putApiv3Ocorrencias(
         id: string,
         requestBody: {
             status_situacao?: 'PENDENTE' | 'EM_ANDAMENTO' | 'CONCLUIDO' | 'CANCELADO';
@@ -117,7 +117,7 @@ export class OcorrNciasService {
      * @returns any Mídia enviada com sucesso.
      * @throws ApiError
      */
-    public postApiV1OcorrenciasMidia(
+    public postApiv3OcorrenciasMidia(
         id: string,
         formData: {
             /**

@@ -13,12 +13,12 @@ export class AdminMunicPiosService {
      * @returns any Município criado com sucesso.
      * @throws ApiError
      */
-    public postApiV1Municipios(
+    public postApiv3Municipios(
         requestBody: Municipio,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/api/v1/municipios',
+            url: '/api/v3/municipios',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -33,10 +33,10 @@ export class AdminMunicPiosService {
      * @returns Municipio Lista de municípios.
      * @throws ApiError
      */
-    public getApiV1Municipios(): CancelablePromise<Array<Municipio>> {
+    public getApiv3Municipios(): CancelablePromise<Array<Municipio>> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/api/v1/municipios',
+            url: '/api/v3/municipios',
             errors: {
                 401: `Não autorizado.`,
             },
@@ -48,12 +48,12 @@ export class AdminMunicPiosService {
      * @returns any Detalhes do município.
      * @throws ApiError
      */
-    public getApiV1Municipios1(
+    public getApiv3Municipios1(
         id: string,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/api/v1/municipios/{id}',
+            url: '/api/v3/municipios/{id}',
             path: {
                 'id': id,
             },
@@ -69,13 +69,13 @@ export class AdminMunicPiosService {
      * @returns any Município atualizado com sucesso.
      * @throws ApiError
      */
-    public putApiV1Municipios(
+    public putApiv3Municipios(
         id: string,
         requestBody: Municipio,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'PUT',
-            url: '/api/v1/municipios/{id}',
+            url: '/api/v3/municipios/{id}',
             path: {
                 'id': id,
             },
@@ -94,12 +94,12 @@ export class AdminMunicPiosService {
      * @returns any Município deletado com sucesso.
      * @throws ApiError
      */
-    public deleteApiV1Municipios(
+    public deleteApiv3Municipios(
         id: string,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/api/v1/municipios/{id}',
+            url: '/api/v3/municipios/{id}',
             path: {
                 'id': id,
             },

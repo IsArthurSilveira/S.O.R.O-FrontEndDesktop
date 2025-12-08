@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'; // Usando Link do react-ro
 import { useAuth } from '../context/AuthContext';
 import { Alert, CircularProgress } from '@mui/material'; // Mantendo Alert e CircularProgress para a lógica
 // Usando o ícone do projeto desktop, seguindo o estilo da v2
-import LogoChama from '../assets/Icone.svg'; 
+import LogoChama from '../assets/S.O.R.O/Icone-Marca-Grande.svg'; 
 import { getClient } from '../services/apiService';
 import type { AuthLogin } from '../services/api/models/AuthLogin'; 
 import type { AuthToken } from '../services/api/models/AuthToken'; 

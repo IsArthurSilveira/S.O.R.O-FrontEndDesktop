@@ -13,12 +13,12 @@ export class AdminGruposService {
      * @returns any Grupo criado com sucesso.
      * @throws ApiError
      */
-    public postApiV1Grupos(
+    public postApiv3Grupos(
         requestBody: Grupo,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/api/v1/grupos',
+            url: '/api/v3/grupos',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -33,10 +33,10 @@ export class AdminGruposService {
      * @returns Grupo Lista de grupos.
      * @throws ApiError
      */
-    public getApiV1Grupos(): CancelablePromise<Array<Grupo>> {
+    public getApiv3Grupos(): CancelablePromise<Array<Grupo>> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/api/v1/grupos',
+            url: '/api/v3/grupos',
             errors: {
                 401: `Não autorizado.`,
             },
@@ -48,12 +48,12 @@ export class AdminGruposService {
      * @returns any Grupo deletado com sucesso.
      * @throws ApiError
      */
-    public deleteApiV1Grupos(
+    public deleteApiv3Grupos(
         id: string,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/api/v1/grupos/{id}',
+            url: '/api/v3/grupos/{id}',
             path: {
                 'id': id,
             },

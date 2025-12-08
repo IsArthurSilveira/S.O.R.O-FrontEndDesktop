@@ -14,12 +14,12 @@ export class AdminBairrosService {
      * @returns Bairro Bairro criado com sucesso.
      * @throws ApiError
      */
-    public postApiV1Bairros(
+    public postApiv3Bairros(
         requestBody: Bairro,
     ): CancelablePromise<Bairro> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/api/v1/bairros',
+            url: '/api/v3/bairros',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -34,10 +34,10 @@ export class AdminBairrosService {
      * @returns Bairro Lista de bairros.
      * @throws ApiError
      */
-    public getApiV1Bairros(): CancelablePromise<Array<Bairro>> {
+    public getApiv3Bairros(): CancelablePromise<Array<Bairro>> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/api/v1/bairros',
+            url: '/api/v3/bairros',
             errors: {
                 401: `Não autorizado.`,
             },
@@ -49,12 +49,12 @@ export class AdminBairrosService {
      * @returns Bairro Detalhes do bairro.
      * @throws ApiError
      */
-    public getApiV1Bairros1(
+    public getApiv3Bairros1(
         id: string,
     ): CancelablePromise<Bairro> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/api/v1/bairros/{id}',
+            url: '/api/v3/bairros/{id}',
             path: {
                 'id': id,
             },
@@ -70,13 +70,13 @@ export class AdminBairrosService {
      * @returns Bairro Bairro atualizado com sucesso.
      * @throws ApiError
      */
-    public putApiV1Bairros(
+    public putApiv3Bairros(
         id: string,
         requestBody: Bairro,
     ): CancelablePromise<Bairro> {
         return this.httpRequest.request({
             method: 'PUT',
-            url: '/api/v1/bairros/{id}',
+            url: '/api/v3/bairros/{id}',
             path: {
                 'id': id,
             },
@@ -95,12 +95,12 @@ export class AdminBairrosService {
      * @returns SuccessDelete Bairro deletado com sucesso.
      * @throws ApiError
      */
-    public deleteApiV1Bairros(
+    public deleteApiv3Bairros(
         id: string,
     ): CancelablePromise<SuccessDelete> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/api/v1/bairros/{id}',
+            url: '/api/v3/bairros/{id}',
             path: {
                 'id': id,
             },

@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar/Sidebar';
 import Header from './components/Header/Header';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Ocorrencias from './pages/Ocorrencias'; //
 import EsqueciSenha from './pages/EsqueciSenha';
 import VerificacaoCodigo from './pages/VerificacaoCodigo';
 import Logout from './pages/Logout';
@@ -13,7 +14,6 @@ import PlaceHolderPage from './pages/PlaceHolderPage';
 
 // Apenas useAuth é necessário, pois os Context Providers estão em main.tsx
 import { useAuth } from './context/AuthContext'; 
-
 
 // 1. Componente de Layout Privado (sem <Routes> internas)
 const PrivateLayout: React.FC = () => {
@@ -75,7 +75,7 @@ const App: React.FC = () => {
             
             {/* Rotas de Exemplo (Caminhos relativos) */}
             <Route path="nova-ocorrencia" element={<PlaceHolderPage />} />
-            <Route path="ocorrencias" element={<PlaceHolderPage />} />
+            <Route path="ocorrencias" element={<Ocorrencias />} />
             <Route path="gerenciamento" element={<PlaceHolderPage />} />
             <Route path="usuarios" element={<PlaceHolderPage />} />
             <Route path="auditoria" element={<PlaceHolderPage />} />

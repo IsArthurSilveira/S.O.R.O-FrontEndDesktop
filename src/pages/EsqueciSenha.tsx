@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Alert, CircularProgress } from '@mui/material'; // Mantendo Alert e CircularProgress para a lógica
-import LogoChama from '../assets/Icone.svg'; // Usando o ícone no padrão da v2
+import LogoChama from '../assets/S.O.R.O/Icone-Marca-Grande.svg'; // Usando o ícone no padrão da v2
 
 const EsqueciSenha: React.FC = () => {
   const navigate = useNavigate();
