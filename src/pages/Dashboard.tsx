@@ -5,6 +5,10 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   BarChart, Bar, Legend, PieChart, Pie, Cell 
 } from 'recharts';
+import KPIPendenteIcon from '../assets/KPI-icons/KPI-Pendente.svg';
+import KPIAndamentoIcon from '../assets/KPI-icons/KPI-Andamento.svg';
+import KPIConcluidoIcon from '../assets/KPI-icons/KPI-Concluido.svg';
+import KPICanceladaIcon from '../assets/KPI-icons/KPI-Cancelada.svg';
 
 interface DashboardData {
   status: Record<string, number>;
@@ -66,11 +70,12 @@ const Dashboard: React.FC = () => {
       </div>
       
       {/* 1. CARDS DE KPI */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <DashboardCard title="Total Geral" value={data?.total || 0} color="text-primary" />
-        <DashboardCard title="Pendentes" value={data?.status['PENDENTE'] || 0} color="text-yellow-600" />
-        <DashboardCard title="Em Andamento" value={data?.status['EM_ANDAMENTO'] || 0} color="text-blue-600" />
-        <DashboardCard title="Concluídas" value={data?.status['CONCLUIDO'] || 0} color="text-green-600" />
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+        <DashboardCard title="Total Geral" value={data?.total || 0} color="text-primary" icon={KPIConcluidoIcon} />
+        <DashboardCard title="Pendentes" value={data?.status['PENDENTE'] || 0} color="text-yellow-600" icon={KPIPendenteIcon} />
+        <DashboardCard title="Em Andamento" value={data?.status['EM_ANDAMENTO'] || 0} color="text-blue-600" icon={KPIAndamentoIcon} />
+        <DashboardCard title="Concluídas" value={data?.status['CONCLUIDO'] || 0} color="text-green-600" icon={KPIConcluidoIcon} />
+        <DashboardCard title="Canceladas" value={data?.status['CANCELADA'] || 0} color="text-red-600" icon={KPICanceladaIcon} />
       </div>
 
       {/* 2. GRÁFICOS - LINHA 1 */}
@@ -143,9 +148,12 @@ const Dashboard: React.FC = () => {
   );
 };
 
-const DashboardCard = ({ title, value, color }: { title: string, value: number, color: string }) => (
+const DashboardCard = ({ title, value, color, icon }: { title: string, value: number, color: string, icon?: string }) => (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-border flex flex-col items-start hover:scale-105 transition-transform duration-200">
-        <h3 className={`font-medium text-sm text-muted-foreground uppercase tracking-wider`}>{title}</h3>
+        <div className="flex items-center justify-between w-full mb-2">
+            <h3 className={`font-medium text-sm text-muted-foreground uppercase tracking-wider`}>{title}</h3>
+            {icon && <img src={icon} alt={title} className="w-8 h-8" />}
+        </div>
         <p className={`text-4xl mt-2 font-bold ${color}`}>{value}</p>
     </div>
 );

@@ -45,6 +45,48 @@ export type AuthContextType = {
   isLoading: boolean;
 };
 
+export type StatusOcorrencia = 'PENDENTE' | 'EM_ANDAMENTO' | 'CONCLUIDO' | 'CANCELADO';
+
+export interface OcorrenciaListItem {
+  id_ocorrencia: string;
+  nr_aviso: string | null;
+  data_acionamento: string;
+  hora_acionamento: string;
+  status_situacao: StatusOcorrencia;
+  natureza?: string | { nome_natureza?: string };
+  municipio?: string | { nome_municipio?: string };
+  bairro?: string | { id_bairro?: string; nome_bairro?: string; regiao?: string; ais?: string; id_municipio_fk?: string };
+  subgrupo?: {
+    id_subgrupo?: string;
+    nome_subgrupo: string;
+  };
+  bairro_info?: {
+    id_bairro?: string;
+    nome_bairro: string;
+    regiao?: string;
+    municipio?: {
+      id_municipio?: string;
+      nome_municipio: string;
+    };
+  };
+}
+
+export interface OcorrenciaPaginacao {
+  data: OcorrenciaListItem[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export interface FiltrosOcorrencia {
+  search?: string;
+  status?: StatusOcorrencia;
+  subgrupoId?: string;
+  bairroId?: string;
+  dataInicio?: string;
+  dataFim?: string;
+}
+
 export interface DashboardStats {
   totalOcorrencias: number;
   ocorrenciasPendentes: number;

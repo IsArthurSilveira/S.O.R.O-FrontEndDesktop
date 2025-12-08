@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Alert, CircularProgress } from '@mui/material'; 
-import LogoChama from '../assets/Icone.svg'; 
+import LogoChama from '../assets/S.O.R.O/Icone-Marca-Grande.svg';
 
 // Adicione a tipagem para o evento de input para compatibilidade com o controle de Backspace
 interface InputEvent extends React.FormEvent<HTMLInputElement> {

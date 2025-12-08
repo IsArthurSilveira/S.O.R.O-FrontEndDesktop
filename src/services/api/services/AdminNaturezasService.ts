@@ -13,12 +13,12 @@ export class AdminNaturezasService {
      * @returns any Natureza criada com sucesso.
      * @throws ApiError
      */
-    public postApiV1Naturezas(
+    public postApiv3Naturezas(
         requestBody: Natureza,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/api/v1/naturezas',
+            url: '/api/v3/naturezas',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -33,10 +33,10 @@ export class AdminNaturezasService {
      * @returns Natureza Lista de naturezas.
      * @throws ApiError
      */
-    public getApiV1Naturezas(): CancelablePromise<Array<Natureza>> {
+    public getApiv3Naturezas(): CancelablePromise<Array<Natureza>> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/api/v1/naturezas',
+            url: '/api/v3/naturezas',
             errors: {
                 401: `Não autorizado.`,
             },
@@ -48,12 +48,12 @@ export class AdminNaturezasService {
      * @returns any Natureza deletada com sucesso.
      * @throws ApiError
      */
-    public deleteApiV1Naturezas(
+    public deleteApiv3Naturezas(
         id: string,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/api/v1/naturezas/{id}',
+            url: '/api/v3/naturezas/{id}',
             path: {
                 'id': id,
             },

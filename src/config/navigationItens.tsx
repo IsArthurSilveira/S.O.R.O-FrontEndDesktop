@@ -1,11 +1,11 @@
-import DashboardIcon from '../assets/Icons/Painel.svg';
-import OcorrenciasIcon from '../assets/Icons/ocorrências.svg';
-import NovaOcorrenciaIcon from '../assets/Icons/novaOcorrencia.svg';
-import DadosMestresIcon from '../assets/Icons/dadosMestres.svg';
-import UsuariosIcon from '../assets/Icons/usuarios.svg';
-import ConfiguracoesIcon from '../assets/Icons/config.svg';
-import AuditoriaIcon from '../assets/Icons/Auditoria.svg';
-import SairIcon from '../assets/Icons/sair.svg';
+import DashboardIcon from '../assets/SideBar/PainelControle-Menu-Icon.svg';
+import OcorrenciasIcon from '../assets/SideBar/Ocorrencia-Menu-Icon.svg';
+import NovaOcorrenciaIcon from '../assets/SideBar/NovaOcorrencia-Menu-Icon.svg';
+import DadosMestresIcon from '../assets/SideBar/DadosMestres-Menu-Icon.svg';
+import UsuariosIcon from '../assets/SideBar/Usuarios-Menu-Icon.svg';
+import ConfiguracoesIcon from '../assets/SideBar/Configuracoes-Menu-Icon.svg';
+import AuditoriaIcon from '../assets/SideBar/Auditoria-Menu-Icon.svg';
+import SairIcon from '../assets/SideBar/Sair-Menu-Icon.svg';
 import type { MenuItem } from '../types';
 import type { PerfilSistema } from '../types'; // Importa o tipo unificado
 

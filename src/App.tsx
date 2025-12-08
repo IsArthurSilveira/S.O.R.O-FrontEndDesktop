@@ -15,7 +15,6 @@ import PlaceHolderPage from './pages/PlaceHolderPage';
 // Apenas useAuth é necessário, pois os Context Providers estão em main.tsx
 import { useAuth } from './context/AuthContext'; 
 
-
 // 1. Componente de Layout Privado (sem <Routes> internas)
 const PrivateLayout: React.FC = () => {
     const { isAuthenticated, isLoading } = useAuth();

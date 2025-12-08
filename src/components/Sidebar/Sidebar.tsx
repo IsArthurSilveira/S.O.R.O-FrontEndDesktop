@@ -4,9 +4,9 @@ import { NavLink, useLocation } from 'react-router-dom';
 import type { MenuItem, PerfilSistema } from '../../types';
 import { navigationItems } from '../../config/navigationItens';
 import { useAuth } from '../../context/AuthContext';
-import ProfileIcon from "../../assets/Profile.svg";
-import FullLogo from "../../assets/logo.svg";
-import Icone from "../../assets/Icone.svg";
+import ProfileIcon from "../../assets/SideBar/Perfil-Menu-Icon.svg";
+import FullLogo from "../../assets/S.O.R.O/Logo-Horizontal.svg";
+import Icone from "../../assets/S.O.R.O/Icone-Marca-Pequeno.svg";
 
 
 // --- Contexto para a Sidebar (Mantido da V2) ---
