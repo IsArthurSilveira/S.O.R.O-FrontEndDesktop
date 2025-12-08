@@ -18,7 +18,7 @@ export class OcorrNciasService {
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/api/v1/ocorrencias',
+            url: '/api/v3/ocorrencias',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -46,7 +46,7 @@ export class OcorrNciasService {
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/api/v1/ocorrencias',
+            url: '/api/v3/ocorrencias',
             query: {
                 'status': status,
                 'subgrupoId': subgrupoId,
@@ -70,7 +70,7 @@ export class OcorrNciasService {
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/api/v1/ocorrencias/{id}',
+            url: '/api/v3/ocorrencias/{id}',
             path: {
                 'id': id,
             },
@@ -97,7 +97,7 @@ export class OcorrNciasService {
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'PUT',
-            url: '/api/v1/ocorrencias/{id}',
+            url: '/api/v3/ocorrencias/{id}',
             path: {
                 'id': id,
             },
@@ -128,7 +128,7 @@ export class OcorrNciasService {
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/api/v1/ocorrencias/{id}/midia',
+            url: '/api/v3/ocorrencias/{id}/midia',
             path: {
                 'id': id,
             },
