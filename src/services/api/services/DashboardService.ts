@@ -7,7 +7,7 @@ import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class DashboardService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
 
-    public getApiV2DashboardOcorrenciasPorStatus(
+    public getApiv3DashboardOcorrenciasPorStatus(
         dataInicio?: string,
         dataFim?: string,
         subgrupoId?: string,
@@ -23,7 +23,7 @@ export class DashboardService {
         });
     }
 
-    public getApiV2DashboardOcorrenciasPorTipo(
+    public getApiv3DashboardOcorrenciasPorTipo(
         dataInicio?: string,
         dataFim?: string,
         bairroId?: string,
@@ -39,7 +39,7 @@ export class DashboardService {
         });
     }
 
-    public getApiV2DashboardOcorrenciasPorBairro(
+    public getApiv3DashboardOcorrenciasPorBairro(
         dataInicio?: string,
         dataFim?: string,
         subgrupoId?: string,
@@ -55,7 +55,7 @@ export class DashboardService {
         });
     }
 
-    public getApiV2DashboardOcorrenciasPorMunicipio(
+    public getApiv3DashboardOcorrenciasPorMunicipio(
         dataInicio?: string,
         dataFim?: string,
         subgrupoId?: string,
@@ -71,7 +71,7 @@ export class DashboardService {
         });
     }
 
-    public getApiV2DashboardOcorrenciasPorPeriodo(
+    public getApiv3DashboardOcorrenciasPorPeriodo(
         periodo?: 'day' | 'month',
         dataInicio?: string,
         dataFim?: string,
@@ -93,7 +93,7 @@ export class DashboardService {
         });
     }
 
-    public getApiV2DashboardAvgCompletionTime(
+    public getApiv3DashboardAvgCompletionTime(
         dataInicio?: string,
         dataFim?: string,
         bairroId?: string,
