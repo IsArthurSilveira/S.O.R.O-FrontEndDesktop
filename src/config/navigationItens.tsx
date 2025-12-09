@@ -39,7 +39,7 @@ export const navigationItems: MenuItem[] = [
     title: 'Usuários',
     href: '/usuarios',
     icon: UsuariosIcon,
-    roles: ['ADMIN', 'CHEFE'] as PerfilSistema[], 
+    roles: ['ADMIN', 'ANALISTA', 'CHEFE'] as PerfilSistema[], 
   },
   {
     title: 'Auditoria',

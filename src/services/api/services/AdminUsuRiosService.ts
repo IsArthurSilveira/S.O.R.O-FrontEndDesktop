@@ -12,10 +12,10 @@ export class AdminUsuRiosService {
      * @returns any Lista de usuários.
      * @throws ApiError
      */
-    public getApiV1Users(): CancelablePromise<any> {
+    public getApiv3Users(): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/api/v1/users',
+            url: '/api/v3/users',
             errors: {
                 403: `Acesso negado (não é Admin).`,
             },
@@ -27,12 +27,12 @@ export class AdminUsuRiosService {
      * @returns any Detalhes do usuário.
      * @throws ApiError
      */
-    public getApiV1Users1(
+    public getApiv3UsersById(
         id: string,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/api/v1/users/{id}',
+            url: '/api/v3/users/{id}',
             path: {
                 'id': id,
             },
@@ -48,13 +48,13 @@ export class AdminUsuRiosService {
      * @returns any Usuário atualizado com sucesso.
      * @throws ApiError
      */
-    public putApiV1Users(
+    public putApiv3Users(
         id: string,
         requestBody: UserUpdate,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'PUT',
-            url: '/api/v1/users/{id}',
+            url: '/api/v3/users/{id}',
             path: {
                 'id': id,
             },
@@ -73,12 +73,12 @@ export class AdminUsuRiosService {
      * @returns any Usuário deletado com sucesso.
      * @throws ApiError
      */
-    public deleteApiV1Users(
+    public deleteApiv3Users(
         id: string,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/api/v1/users/{id}',
+            url: '/api/v3/users/{id}',
             path: {
                 'id': id,
             },
