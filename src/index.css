@@ -6,12 +6,20 @@
 @layer base {
   * {
     box-sizing: border-box;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
   }
+  
   body {
     /* Poppins como padrão para todo o site */
     font-family: 'Poppins', sans-serif;
     /* fundo e cor de texto padrão */
     background-color: #FAFAFA; /* Cinza quase branco */
     color: #0A1C3E; /* Azul escuro */
+  }
+  
+  /* Modo escuro para o body */
+  .dark body {
+    background-color: #0a0a0a; /* Preto suave */
+    color: #ffffff; /* Branco */
   }
 }

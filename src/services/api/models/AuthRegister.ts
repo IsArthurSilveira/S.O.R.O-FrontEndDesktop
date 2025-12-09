@@ -9,8 +9,5 @@ export type AuthRegister = (UserInput & {
      */
     password: string;
     /**
-     * Senha do usuário, obrigatória para registro via API
-     */
-    password: string;
-});
-
+});**/
+})
