@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getClient } from '../services/apiService';
 import type { FiltrosOcorrencia, StatusOcorrencia } from '../types';
 import FiltrosModal from '../components/Ocorrencias/FiltrosModal';
+import DeletarOcorrenciaModal from '../components/Ocorrencias/DeletarOcorrenciaModal';
 
 // Ícones KPI (Black para a listagem)
 import KpiCanceladaBlack from '../assets/KPI-icons/KPI-Cancelada-Black.svg';
@@ -24,6 +25,8 @@ export default function Ocorrencias() {
   const [error, setError] = useState<string | null>(null);
   const [filtros, setFiltros] = useState<FiltrosOcorrencia>({});
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  const [mostrarDeletar, setMostrarDeletar] = useState(false);
+  const [ocorrenciaParaDeletar, setOcorrenciaParaDeletar] = useState<string | null>(null);
   const [ordemCrescente, setOrdemCrescente] = useState(true);
   const [paginacao, setPaginacao] = useState({
     page: 1,
@@ -42,6 +45,28 @@ export default function Ocorrencias() {
   // Carregar dados relacionados uma única vez
   useEffect(() => {
     carregarDadosRelacionados();
+  }, []);
+
+  // Bloquear rolagem do mouse e toque enquanto a tela de Ocorrências estiver montada
+  useEffect(() => {
+    const preventWheel = (e: WheelEvent) => {
+      e.preventDefault();
+    };
+    const preventTouch = (e: TouchEvent) => {
+      e.preventDefault();
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    window.addEventListener('wheel', preventWheel, { passive: false });
+    window.addEventListener('touchmove', preventTouch, { passive: false });
+
+    return () => {
+      window.removeEventListener('wheel', preventWheel as EventListener);
+      window.removeEventListener('touchmove', preventTouch as EventListener);
+      document.body.style.overflow = previousOverflow;
+    };
   }, []);
 
   // Carregar ocorrências
@@ -135,9 +160,33 @@ export default function Ocorrencias() {
     }
   };
 
-  const handleDelete = async (_id: string) => {
-    alert('Funcionalidade de exclusão será implementada em breve.');
-    // TODO: Implementar quando o endpoint estiver disponível
+  const handleDeleteClick = (idOcorrencia: string) => {
+    // Verificar se o usuário configurou para não mostrar o modal
+    const naoMostrar = localStorage.getItem('naoMostrarModalDeletarOcorrencia');
+    
+    if (naoMostrar === 'true') {
+      // Deletar diretamente
+      confirmarDelecao(idOcorrencia);
+    } else {
+      // Abrir modal de confirmação
+      setOcorrenciaParaDeletar(idOcorrencia);
+      setMostrarDeletar(true);
+    }
+  };
+
+  const confirmarDelecao = async (idOcorrencia: string) => {
+    try {
+      // TODO: Endpoint de delete não está disponível na API ainda
+      // await api.ocorrNcias.deleteApiv3Ocorrencias(idOcorrencia);
+      console.log('Tentando deletar ocorrência:', idOcorrencia);
+      alert('Funcionalidade de exclusão será implementada quando o endpoint estiver disponível na API.');
+      setMostrarDeletar(false);
+      setOcorrenciaParaDeletar(null);
+      // await carregarOcorrencias();
+    } catch (e: any) {
+      console.error('Erro ao deletar ocorrência', e);
+      alert('Erro ao deletar ocorrência: ' + (e.message || 'Erro desconhecido'));
+    }
   };
 
   const handleExportCSV = () => {
@@ -273,13 +322,15 @@ export default function Ocorrencias() {
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-[#f9f9fa] p-1 overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-0.2">
-        <h1 className="font-['Poppins'] font-semibold text-lg text-black">
-          Lista de ocorrências
-        </h1>
-      </div>
+    <div className="flex flex-col h-full">
+      {/* Container com margem negativa para subir o conteúdo */}
+      <div className="-mt-6 flex flex-col h-full">
+        {/* Título da Página */}
+        <div className="mb-3 mt-[12px]">
+          <h1 className="font-['Poppins'] font-semibold text-base text-[#202224] leading-normal">
+            Lista de ocorrências
+          </h1>
+        </div>
 
       {/* Botão Exportar */}
       <div className="flex justify-end mb-0">
@@ -342,6 +393,20 @@ export default function Ocorrencias() {
         onAplicarFiltros={setFiltros}
       />
 
+      {/* Modal de Deletar Ocorrência */}
+      <DeletarOcorrenciaModal 
+        isOpen={mostrarDeletar} 
+        onClose={() => {
+          setMostrarDeletar(false);
+          setOcorrenciaParaDeletar(null);
+        }} 
+        onConfirm={() => {
+          if (ocorrenciaParaDeletar) {
+            confirmarDelecao(ocorrenciaParaDeletar);
+          }
+        }}
+      />
+
       {/* Tabela de Ocorrências */}
       <div className="flex flex-col gap-0 overflow-hidden rounded-tl-lg rounded-tr-lg flex-1 min-h-0">
         {/* Cabeçalho da Tabela */}
@@ -355,7 +420,7 @@ export default function Ocorrencias() {
         </div>
 
         {/* Conteúdo da Tabela */}
-        <div className="flex flex-col overflow-y-auto flex-1">
+        <div className="flex flex-col flex-1">
           {loading ? (
             <div className="flex items-center justify-center h-full">
               <p className="font-['Poppins'] text-sm text-[#202224] opacity-60">Carregando...</p>
@@ -416,7 +481,7 @@ export default function Ocorrencias() {
                     </button>
                     <button 
                       className="hover:opacity-70 transition-opacity"
-                      onClick={() => handleDelete(ocorrencia.id_ocorrencia)}
+                      onClick={() => handleDeleteClick(ocorrencia.id_ocorrencia)}
                     >
                       <img src={DeleteIcon} alt="Deletar" className="w-5 h-5" />
                     </button>
@@ -429,14 +494,14 @@ export default function Ocorrencias() {
       </div>
 
       {/* Paginação */}
-      <div className="flex items-center justify-center gap-2 mt-2.5  flex-shrink-0">
+      <div className="flex items-center justify-center gap-2 h-[88px] flex-shrink-0">
         {/* Botão Anterior */}
         <button
           onClick={() => goToPage(paginacao.page - 1)}
           disabled={paginacao.page === 1}
-          className="flex items-center justify-center h-9 w-9 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center justify-center h-10 w-12 rounded-xl bg-white border border-[rgba(6,28,67,0.4)] hover:bg-[#edeefc] hover:shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm"
         >
-          <span className="text-gray-600 font-['Poppins'] text-base">‹</span>
+          <span className="text-[#202224] font-['Poppins'] text-base font-medium">‹</span>
         </button>
 
         {/* Números das Páginas */}
@@ -448,10 +513,10 @@ export default function Ocorrencias() {
             <button
               key={pageNumber}
               onClick={() => goToPage(pageNumber)}
-              className={`flex items-center justify-center h-9 w-9 rounded-lg transition-colors font-['Poppins'] text-sm ${
+              className={`flex items-center justify-center h-10 w-12 rounded-xl transition-all font-['Poppins'] text-sm font-medium border shadow-sm ${
                 isActive 
-                  ? 'bg-gray-200 text-gray-900 font-medium' 
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-[#edeefc] text-[#202224] border-[rgba(6,28,67,0.4)] shadow-md' 
+                  : 'bg-white text-[#202224] hover:bg-[#edeefc] hover:shadow-md border-[rgba(6,28,67,0.4)]'
               }`}
             >
               {pageNumber}
@@ -463,10 +528,11 @@ export default function Ocorrencias() {
         <button
           onClick={() => goToPage(paginacao.page + 1)}
           disabled={paginacao.page === paginacao.totalPages}
-          className="flex items-center justify-center h-9 w-9 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center justify-center h-10 w-12 rounded-xl bg-white border border-[rgba(6,28,67,0.4)] hover:bg-[#edeefc] hover:shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm"
         >
-          <span className="text-gray-600 font-['Poppins'] text-base">›</span>
+          <span className="text-[#202224] font-['Poppins'] text-base font-medium">›</span>
         </button>
+      </div>
       </div>
     </div>
   );
