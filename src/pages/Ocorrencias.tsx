@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { getClient } from '../services/apiService';
 import type { FiltrosOcorrencia, StatusOcorrencia } from '../types';
 import FiltrosModal from '../components/Ocorrencias/FiltrosModal';
+import DetalhesOcorrenciaModal from '../components/Ocorrencias/DetalhesOcorrenciaModal';
+import EditarOcorrenciaModal from '../components/Ocorrencias/EditarOcorrenciaModal';
 
 // Ícones KPI (Black para a listagem)
 import KpiCanceladaBlack from '../assets/KPI-icons/KPI-Cancelada-Black.svg';
@@ -36,6 +38,9 @@ export default function Ocorrencias() {
   const [naturezas, setNaturezas] = useState<Map<string, any>>(new Map());
   const [bairros, setBairros] = useState<Map<string, any>>(new Map());
   const [municipios, setMunicipios] = useState<Map<string, any>>(new Map());
+  const [ocorrenciaSelecionada, setOcorrenciaSelecionada] = useState<any>(null);
+  const [mostrarDetalhes, setMostrarDetalhes] = useState(false);
+  const [mostrarEdicao, setMostrarEdicao] = useState(false);
 
   const api = getClient();
 
@@ -458,13 +463,19 @@ export default function Ocorrencias() {
                   <div className="flex items-center gap-2 w-24">
                     <button 
                       className="hover:opacity-70 transition-opacity"
-                      onClick={() => window.location.href = `/ocorrencias/${ocorrencia.id_ocorrencia}`}
+                      onClick={() => {
+                        setOcorrenciaSelecionada(ocorrencia);
+                        setMostrarDetalhes(true);
+                      }}
                     >
                       <img src={ViewIcon} alt="Visualizar" className="w-5 h-5" />
                     </button>
                     <button 
                       className="hover:opacity-70 transition-opacity"
-                      onClick={() => window.location.href = `/ocorrencias/${ocorrencia.id_ocorrencia}/editar`}
+                      onClick={() => {
+                        setOcorrenciaSelecionada(ocorrencia);
+                        setMostrarEdicao(true);
+                      }}
                     >
                       <img src={EditIcon} alt="Editar" className="w-5 h-5" />
                     </button>
@@ -574,6 +585,34 @@ export default function Ocorrencias() {
         </button>
       </div>
       </div>
+
+      {/* Modais */}
+      {mostrarDetalhes && ocorrenciaSelecionada && (
+        <DetalhesOcorrenciaModal
+          ocorrencia={ocorrenciaSelecionada}
+          onClose={() => {
+            setMostrarDetalhes(false);
+            setOcorrenciaSelecionada(null);
+          }}
+          onEdit={() => {
+            setMostrarDetalhes(false);
+            setMostrarEdicao(true);
+          }}
+        />
+      )}
+
+      {mostrarEdicao && ocorrenciaSelecionada && (
+        <EditarOcorrenciaModal
+          ocorrencia={ocorrenciaSelecionada}
+          onClose={() => {
+            setMostrarEdicao(false);
+            setOcorrenciaSelecionada(null);
+          }}
+          onSave={() => {
+            carregarOcorrencias();
+          }}
+        />
+      )}
     </div>
   );
 }

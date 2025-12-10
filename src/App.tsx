@@ -7,6 +7,7 @@ import RightBar from './components/RightBar/RightBar';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Ocorrencias from './pages/Ocorrencias';
+import NovaOcorrencia from './pages/NovaOcorrencia';
 import EsqueciSenha from './pages/EsqueciSenha';
 import VerificacaoCodigo from './pages/VerificacaoCodigo';
 import Logout from './pages/Logout';
@@ -97,6 +98,7 @@ const App: React.FC = () => {
             
             {/* Rotas de Exemplo (Caminhos relativos) */}
             <Route path="ocorrencias" element={<Ocorrencias />} />
+            <Route path="nova-ocorrencia" element={<NovaOcorrencia />} />
             <Route path="usuarios" element={<Usuarios />} />
             <Route path="auditoria" element={<Auditoria />} />
             <Route path="configuracoes" element={<Configuracoes />} />

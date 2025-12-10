@@ -13,12 +13,12 @@ export class AdminFormasDeAcervoService {
      * @returns any Forma de acervo criada com sucesso.
      * @throws ApiError
      */
-    public postApiV1FormasAcervo(
+    public postApiv3FormasAcervo(
         requestBody: FormaAcervo,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'POST',
-            url: '/api/v1/formas-acervo',
+            url: '/api/v3/formas-acervo',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -33,10 +33,10 @@ export class AdminFormasDeAcervoService {
      * @returns FormaAcervo Lista de formas de acervo.
      * @throws ApiError
      */
-    public getApiV1FormasAcervo(): CancelablePromise<Array<FormaAcervo>> {
+    public getApiv3FormasAcervo(): CancelablePromise<Array<FormaAcervo>> {
         return this.httpRequest.request({
             method: 'GET',
-            url: '/api/v1/formas-acervo',
+            url: '/api/v3/formas-acervo',
             errors: {
                 401: `Não autorizado.`,
             },
@@ -48,12 +48,12 @@ export class AdminFormasDeAcervoService {
      * @returns any Forma de acervo deletada com sucesso.
      * @throws ApiError
      */
-    public deleteApiV1FormasAcervo(
+    public deleteApiv3FormasAcervo(
         id: string,
     ): CancelablePromise<any> {
         return this.httpRequest.request({
             method: 'DELETE',
-            url: '/api/v1/formas-acervo/{id}',
+            url: '/api/v3/formas-acervo/{id}',
             path: {
                 'id': id,
             },

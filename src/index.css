@@ -3,6 +3,9 @@
 
 @import "tailwindcss/index.css";
 
+/* Leaflet CSS */
+@import "leaflet/dist/leaflet.css";
+
 @layer base {
   * {
     box-sizing: border-box;
