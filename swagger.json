@@ -2371,7 +2371,7 @@
         }
       }
     },
-    "/api/v1/users": {
+    "/api/v3/users": {
       "get": {
         "summary": "Lista todos os usuários (apenas Admin)",
         "tags": [
@@ -2392,7 +2392,7 @@
         }
       }
     },
-    "/api/v1/users/{id}": {
+    "/api/v3/users/{id}": {
       "get": {
         "summary": "Obtém um usuário pelo ID (apenas Admin)",
         "tags": [

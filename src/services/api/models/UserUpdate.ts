@@ -5,9 +5,6 @@
 export type UserUpdate = {
     nome?: string;
     email?: string;
-    /**
-     * Nova senha (opcional)
-     */
     password?: string;
     matricula?: string;
     tipo_perfil?: UserUpdate.tipo_perfil;

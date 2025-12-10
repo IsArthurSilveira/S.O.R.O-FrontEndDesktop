@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import SearchIcon from '../assets/Actions/Search-Icon.svg';
 import FilterIcon from '../assets/Actions/Filter-Icon.svg';
 import SortIcon from '../assets/Actions/Reorder-Icon.svg';
-import ExportIcon from '../assets/Actions/CSV-Icon.svg';
 
-// Ícones para tipos de atividade
-const ReportIcon = "https://www.figma.com/api/mcp/asset/70db8a3b-3c97-44dd-9efb-0923645dd91c";
-const BugIcon = "https://www.figma.com/api/mcp/asset/99d9947b-ce21-464d-a48a-ef158a962c21";
-const UserPlusIcon = "https://www.figma.com/api/mcp/asset/722fceb6-2629-4738-880f-9af50bae47ad";
-const UserEditIcon = "https://www.figma.com/api/mcp/asset/8888f80b-196c-4933-9248-1291f7c138f1";
-const UserIconAvatar = "https://www.figma.com/api/mcp/asset/51816700-0805-4712-be11-830c91a37408";
+// Ícones de Auditoria
+import RelatorioNovoIcon from '../assets/Audit/Relatorio-Novo-Icon.svg';
+import OcorrenciaEditadaIcon from '../assets/Audit/Ocorrencia-Editada-Icon.svg';
+import OcorrenciaNovaIcon from '../assets/Audit/Ocorrencia-Nova-Icon.svg';
+import UsuarioEditadoIcon from '../assets/Audit/Usuario-Editado-Icon.svg';
+import UsuarioAdicionadoIcon from '../assets/Audit/Usuario-Adicionado-Icon.svg';
+import PerfilIcon from '../assets/SideBar/Perfil-Menu-Icon.svg';
 
 interface AuditoriaRegistro {
 	id: string;
@@ -71,17 +71,17 @@ export default function Auditoria() {
 	const getIconForType = (tipo: string) => {
 		switch (tipo) {
 			case 'relatorio':
-				return ReportIcon;
+				return RelatorioNovoIcon;
 			case 'ocorrencia_editada':
-				return BugIcon;
+				return OcorrenciaEditadaIcon;
 			case 'ocorrencia_criada':
-				return BugIcon;
+				return OcorrenciaNovaIcon;
 			case 'usuario_editado':
-				return UserEditIcon;
+				return UsuarioEditadoIcon;
 			case 'usuario_criado':
-				return UserPlusIcon;
+				return UsuarioAdicionadoIcon;
 			default:
-				return ReportIcon;
+				return RelatorioNovoIcon;
 		}
 	};
 
@@ -111,39 +111,12 @@ export default function Auditoria() {
 		}
 	};
 
-	const exportarCSV = () => {
-		const headers = ['ID', 'Atividade', 'Usuário', 'Data', 'Tipo'];
-		const csvContent = [
-			headers.join(','),
-			...registros.map(r =>
-				[r.id, `"${r.atividade}"`, `"${r.usuario}"`, r.data, r.tipo].join(',')
-			)
-		].join('\n');
-
-		const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-		const link = document.createElement('a');
-		const url = URL.createObjectURL(blob);
-		link.setAttribute('href', url);
-		link.setAttribute('download', `auditoria_${new Date().toISOString().split('T')[0]}.csv`);
-		link.style.visibility = 'hidden';
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-	};
-
 	return (
 		<div className="flex flex-col h-full">
 			<div className="-mt-6 flex flex-col h-full">
-				{/* Título e Botão de Exportar */}
-				<div className="mb-3 mt-[12px] flex items-center justify-between">
+				{/* Título */}
+				<div className="mb-3 mt-[12px]">
 					<h1 className="font-['Poppins'] font-semibold text-base text-[#202224]">Registros de Auditoria</h1>
-					<button
-						onClick={exportarCSV}
-						className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#D32F2F] hover:bg-[#B71C1C] transition-colors"
-					>
-						<img src={ExportIcon} alt="Exportar CSV" className="w-5 h-5" />
-						<span className="font-['Poppins'] text-xs text-white">Exportar CSV</span>
-					</button>
 				</div>
 
 				{/* Barra de Pesquisa e Filtros */}
@@ -207,20 +180,16 @@ export default function Auditoria() {
 									<div className="flex items-center gap-4 px-4 h-full">
 										{/* Atividade */}
 										<div className="flex items-center gap-2 flex-1">
-											{item.tipo === 'relatorio' ? (
-												<img src={getIconForType(item.tipo)} alt="Icon" className="w-7 h-7" />
-											) : (
-												<div className="bg-[rgba(0,0,0,0.04)] p-1 rounded-lg flex items-center justify-center">
-													<img src={getIconForType(item.tipo)} alt="Icon" className="w-5 h-5" />
-												</div>
-											)}
+											<div className="bg-[rgba(0,0,0,0.04)] p-1 rounded-lg flex items-center justify-center">
+												<img src={getIconForType(item.tipo)} alt="Icon" className="w-5 h-5" />
+											</div>
 											<p className="font-['Poppins'] font-medium text-xs text-[#202224] opacity-90 truncate" title={item.atividade}>
 												{item.atividade}
 											</p>
 										</div>
 										{/* Usuário */}
 										<div className="flex items-center gap-2 w-64">
-											<img src={UserIconAvatar} alt="User" className="w-7 h-7" />
+											<img src={PerfilIcon} alt="User" className="w-5 h-5" />
 											<p className="font-['Poppins'] font-medium text-xs text-[#202224] opacity-90 truncate" title={item.usuario}>
 												{item.usuario}
 											</p>
