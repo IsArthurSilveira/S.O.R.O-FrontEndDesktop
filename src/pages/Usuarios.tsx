@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { getClient } from '../services/apiService';
 import SearchIcon from '../assets/Actions/Search-Icon.svg';
 import EditIcon from '../assets/Actions/Edit-Icon.svg';
+import AdicionarIcon from '../assets/SideBar/NovaOcorrencia-Menu-Icon.svg';
 import DeleteIcon from '../assets/Actions/Delete-Icon.svg';
-import UsuariosIcon from '../assets/Sidebar/Usuarios-Menu-Icon.svg';
 import FilterIcon from '../assets/Actions/Filter-Icon.svg';
 import SortIcon from '../assets/Actions/Reorder-Icon.svg';
 import FiltrosModal from '../components/Ocorrencias/FiltrosModal';
@@ -236,7 +236,7 @@ export default function Usuarios() {
 						onClick={() => setMostrarAdicionar(true)}
 						className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-tl-lg rounded-tr-lg bg-[rgba(160,237,173,0.6)] border border-[rgba(6,28,67,0.4)] border-b-0 hover:bg-[rgba(160,237,173,0.8)] transition-colors"
 					>
-						<img src={UsuariosIcon} alt="Adicionar Usuário" className="w-4 h-4 sm:w-5 sm:h-5" />
+						<img src={AdicionarIcon} alt="Adicionar Usuário" className="w-4 h-4 sm:w-5 sm:h-5" />
 						<span className="font-['Poppins'] text-[10px] sm:text-xs text-black">Adicionar Usuário</span>
 					</button>
 				</div>
