@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { getClient } from '../services/apiService';
 import type { FiltrosOcorrencia, StatusOcorrencia } from '../types';
 import FiltrosModal from '../components/Ocorrencias/FiltrosModal';
-import DeletarOcorrenciaModal from '../components/Ocorrencias/DeletarOcorrenciaModal';
 
 // Ícones KPI (Black para a listagem)
 import KpiCanceladaBlack from '../assets/KPI-icons/KPI-Cancelada-Black.svg';
@@ -13,7 +12,6 @@ import KpiConcluidoBlack from '../assets/KPI-icons/KPI-Concluído-Black.svg';
 // Ícones de Ações
 import SearchIcon from '../assets/Actions/Search-Icon.svg';
 import EditIcon from '../assets/Actions/Edit-Icon.svg';
-import DeleteIcon from '../assets/Actions/Delete-Icon.svg';
 import ViewIcon from '../assets/Actions/Details-Icon.svg';
 import ExportIcon from '../assets/Actions/CSV-Icon.svg';
 import FilterIcon from '../assets/Actions/Filter-Icon.svg';
@@ -25,9 +23,8 @@ export default function Ocorrencias() {
   const [error, setError] = useState<string | null>(null);
   const [filtros, setFiltros] = useState<FiltrosOcorrencia>({});
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
-  const [mostrarDeletar, setMostrarDeletar] = useState(false);
-  const [ocorrenciaParaDeletar, setOcorrenciaParaDeletar] = useState<string | null>(null);
   const [ordemCrescente, setOrdemCrescente] = useState(true);
+  const [termoBusca, setTermoBusca] = useState('');
   const [paginacao, setPaginacao] = useState({
     page: 1,
     totalPages: 1,
@@ -74,7 +71,12 @@ export default function Ocorrencias() {
     if (subgrupos.size > 0 && grupos.size > 0 && naturezas.size > 0 && bairros.size > 0) {
       carregarOcorrencias();
     }
-  }, [filtros, paginacao.page, subgrupos, grupos, naturezas, bairros]);
+  }, [filtros, paginacao.page, subgrupos, grupos, naturezas, bairros, termoBusca]);
+
+  // Resetar página ao buscar
+  useEffect(() => {
+    setPaginacao(prev => ({ ...prev, page: 1 }));
+  }, [termoBusca]);
 
   const carregarDadosRelacionados = async () => {
     try {
@@ -132,12 +134,17 @@ export default function Ocorrencias() {
       setLoading(true);
       setError(null);
       
+      // Se há busca ativa, carrega todas as ocorrências de uma vez
+      // Caso contrário, carrega apenas a página atual
+      const limitParaCarregar = termoBusca.trim() ? 1000 : paginacao.limit;
+      const paginaParaCarregar = termoBusca.trim() ? 1 : paginacao.page;
+      
       const response = await api.ocorrNcias.getApiv3Ocorrencias(
         filtros.status,
         filtros.subgrupoId,
         filtros.bairroId,
-        paginacao.page,
-        paginacao.limit
+        paginaParaCarregar,
+        limitParaCarregar
       );
 
       console.log('📦 Ocorrências carregadas:', response.data?.length || 0);
@@ -160,34 +167,27 @@ export default function Ocorrencias() {
     }
   };
 
-  const handleDeleteClick = (idOcorrencia: string) => {
-    // Verificar se o usuário configurou para não mostrar o modal
-    const naoMostrar = localStorage.getItem('naoMostrarModalDeletarOcorrencia');
-    
-    if (naoMostrar === 'true') {
-      // Deletar diretamente
-      confirmarDelecao(idOcorrencia);
-    } else {
-      // Abrir modal de confirmação
-      setOcorrenciaParaDeletar(idOcorrencia);
-      setMostrarDeletar(true);
-    }
-  };
+  // Filtrar ocorrências pela busca (ID ou número de aviso)
+  // Se há termo de busca, filtra localmente. Caso contrário, usa a lista da API
+  const ocorrenciasFiltradas = termoBusca.trim() 
+    ? ocorrencias.filter((ocorrencia) => {
+        const termo = termoBusca.toLowerCase().trim();
+        const nrAviso = (ocorrencia.nr_aviso || '').toString().toLowerCase();
+        const idOcorrencia = (ocorrencia.id_ocorrencia || '').toString().toLowerCase();
+        
+        // Busca por nr_aviso ou id_ocorrencia
+        return nrAviso.includes(termo) || idOcorrencia.includes(termo);
+      })
+    : ocorrencias;
 
-  const confirmarDelecao = async (idOcorrencia: string) => {
-    try {
-      // TODO: Endpoint de delete não está disponível na API ainda
-      // await api.ocorrNcias.deleteApiv3Ocorrencias(idOcorrencia);
-      console.log('Tentando deletar ocorrência:', idOcorrencia);
-      alert('Funcionalidade de exclusão será implementada quando o endpoint estiver disponível na API.');
-      setMostrarDeletar(false);
-      setOcorrenciaParaDeletar(null);
-      // await carregarOcorrencias();
-    } catch (e: any) {
-      console.error('Erro ao deletar ocorrência', e);
-      alert('Erro ao deletar ocorrência: ' + (e.message || 'Erro desconhecido'));
-    }
-  };
+  // Aplicar paginação apenas quando há busca (paginação local)
+  // Quando não há busca, a API já retorna os dados paginados
+  const totalFiltradas = ocorrenciasFiltradas.length;
+  const totalPaginasFiltradas = Math.max(1, Math.ceil(totalFiltradas / paginacao.limit));
+  
+  const ocorrenciasPaginadas = termoBusca.trim()
+    ? ocorrenciasFiltradas.slice((paginacao.page - 1) * paginacao.limit, paginacao.page * paginacao.limit)
+    : ocorrenciasFiltradas; // Sem busca, usa direto da API (já vem paginado)
 
   const handleExportCSV = () => {
     // Implementar exportação CSV
@@ -316,7 +316,8 @@ export default function Ocorrencias() {
   };
 
   const goToPage = (page: number) => {
-    if (page >= 1 && page <= paginacao.totalPages) {
+    const totalPages = termoBusca.trim() ? totalPaginasFiltradas : paginacao.totalPages;
+    if (page >= 1 && page <= totalPages) {
       setPaginacao({ ...paginacao, page });
     }
   };
@@ -357,10 +358,10 @@ export default function Ocorrencias() {
           <img src={SearchIcon} alt="Pesquisar" className="w-5 h-5" />
           <input
             type="text"
-            placeholder="Pesquisar ocorrência"
+            placeholder="Pesquisar por ID ou número de aviso"
             className="flex-1 bg-transparent border-none outline-none text-sm text-black placeholder:text-[rgba(0,0,0,0.2)] font-['Poppins']"
-            value={filtros.search || ''}
-            onChange={(e) => setFiltros({ ...filtros, search: e.target.value })}
+            value={termoBusca}
+            onChange={(e) => setTermoBusca(e.target.value)}
           />
         </div>
 
@@ -393,20 +394,6 @@ export default function Ocorrencias() {
         onAplicarFiltros={setFiltros}
       />
 
-      {/* Modal de Deletar Ocorrência */}
-      <DeletarOcorrenciaModal 
-        isOpen={mostrarDeletar} 
-        onClose={() => {
-          setMostrarDeletar(false);
-          setOcorrenciaParaDeletar(null);
-        }} 
-        onConfirm={() => {
-          if (ocorrenciaParaDeletar) {
-            confirmarDelecao(ocorrenciaParaDeletar);
-          }
-        }}
-      />
-
       {/* Tabela de Ocorrências */}
       <div className="flex flex-col gap-0 overflow-hidden rounded-tl-lg rounded-tr-lg flex-1 min-h-0">
         {/* Cabeçalho da Tabela */}
@@ -429,12 +416,14 @@ export default function Ocorrencias() {
             <div className="flex items-center justify-center h-full">
               <p className="font-['Poppins'] text-sm text-red-600">{error}</p>
             </div>
-          ) : ocorrencias.length === 0 ? (
+          ) : ocorrenciasPaginadas.length === 0 ? (
             <div className="flex items-center justify-center h-full">
-              <p className="font-['Poppins'] text-sm text-[#202224] opacity-60">Nenhuma ocorrência encontrada</p>
+              <p className="font-['Poppins'] text-sm text-[#202224] opacity-60">
+                {termoBusca.trim() ? 'Nenhuma ocorrência encontrada com esse ID' : 'Nenhuma ocorrência encontrada'}
+              </p>
             </div>
           ) : (
-            ocorrencias.map((ocorrencia) => (
+            ocorrenciasPaginadas.map((ocorrencia) => (
               <div
                 key={ocorrencia.id_ocorrencia}
                 className="border-b border-[rgba(6,28,67,0.4)] h-10 overflow-hidden relative"
@@ -479,12 +468,6 @@ export default function Ocorrencias() {
                     >
                       <img src={EditIcon} alt="Editar" className="w-5 h-5" />
                     </button>
-                    <button 
-                      className="hover:opacity-70 transition-opacity"
-                      onClick={() => handleDeleteClick(ocorrencia.id_ocorrencia)}
-                    >
-                      <img src={DeleteIcon} alt="Deletar" className="w-5 h-5" />
-                    </button>
                   </div>
                 </div>
               </div>
@@ -505,29 +488,86 @@ export default function Ocorrencias() {
         </button>
 
         {/* Números das Páginas */}
-        {Array.from({ length: Math.min(5, paginacao.totalPages) }, (_, i) => {
-          const pageNumber = i + 1;
-          const isActive = pageNumber === paginacao.page;
+        {(() => {
+          const totalPages = termoBusca.trim() ? totalPaginasFiltradas : paginacao.totalPages;
+          const maxPaginasVisiveis = 5;
+          let paginaInicio = Math.max(1, paginacao.page - Math.floor(maxPaginasVisiveis / 2));
+          let paginaFim = Math.min(totalPages, paginaInicio + maxPaginasVisiveis - 1);
           
-          return (
-            <button
-              key={pageNumber}
-              onClick={() => goToPage(pageNumber)}
-              className={`flex items-center justify-center h-10 w-12 rounded-xl transition-all font-['Poppins'] text-sm font-medium border shadow-sm ${
-                isActive 
-                  ? 'bg-[#edeefc] text-[#202224] border-[rgba(6,28,67,0.4)] shadow-md' 
-                  : 'bg-white text-[#202224] hover:bg-[#edeefc] hover:shadow-md border-[rgba(6,28,67,0.4)]'
-              }`}
-            >
-              {pageNumber}
-            </button>
-          );
-        })}
+          // Ajusta o início se estiver muito próximo do fim
+          if (paginaFim - paginaInicio < maxPaginasVisiveis - 1) {
+            paginaInicio = Math.max(1, paginaFim - maxPaginasVisiveis + 1);
+          }
+          
+          const paginas = [];
+          
+          // Primeira página
+          if (paginaInicio > 1) {
+            paginas.push(
+              <button
+                key={1}
+                onClick={() => goToPage(1)}
+                className="flex items-center justify-center h-10 w-12 rounded-xl transition-all font-['Poppins'] text-sm font-medium border shadow-sm bg-white text-[#202224] hover:bg-[#edeefc] hover:shadow-md border-[rgba(6,28,67,0.4)]"
+              >
+                1
+              </button>
+            );
+            
+            if (paginaInicio > 2) {
+              paginas.push(
+                <span key="dots-start" className="flex items-center justify-center h-10 w-12 text-[#202224] font-['Poppins'] text-sm">
+                  ...
+                </span>
+              );
+            }
+          }
+          
+          // Páginas intermediárias
+          for (let i = paginaInicio; i <= paginaFim; i++) {
+            const isActive = i === paginacao.page;
+            paginas.push(
+              <button
+                key={i}
+                onClick={() => goToPage(i)}
+                className={`flex items-center justify-center h-10 w-12 rounded-xl transition-all font-['Poppins'] text-sm font-medium border shadow-sm ${
+                  isActive 
+                    ? 'bg-[#edeefc] text-[#202224] border-[rgba(6,28,67,0.4)] shadow-md' 
+                    : 'bg-white text-[#202224] hover:bg-[#edeefc] hover:shadow-md border-[rgba(6,28,67,0.4)]'
+                }`}
+              >
+                {i}
+              </button>
+            );
+          }
+          
+          // Última página
+          if (paginaFim < totalPages) {
+            if (paginaFim < totalPages - 1) {
+              paginas.push(
+                <span key="dots-end" className="flex items-center justify-center h-10 w-12 text-[#202224] font-['Poppins'] text-sm">
+                  ...
+                </span>
+              );
+            }
+            
+            paginas.push(
+              <button
+                key={totalPages}
+                onClick={() => goToPage(totalPages)}
+                className="flex items-center justify-center h-10 w-12 rounded-xl transition-all font-['Poppins'] text-sm font-medium border shadow-sm bg-white text-[#202224] hover:bg-[#edeefc] hover:shadow-md border-[rgba(6,28,67,0.4)]"
+              >
+                {totalPages}
+              </button>
+            );
+          }
+          
+          return paginas;
+        })()}
 
         {/* Botão Próximo */}
         <button
           onClick={() => goToPage(paginacao.page + 1)}
-          disabled={paginacao.page === paginacao.totalPages}
+          disabled={paginacao.page === (termoBusca.trim() ? totalPaginasFiltradas : paginacao.totalPages)}
           className="flex items-center justify-center h-10 w-12 rounded-xl bg-white border border-[rgba(6,28,67,0.4)] hover:bg-[#edeefc] hover:shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm"
         >
           <span className="text-[#202224] font-['Poppins'] text-base font-medium">›</span>

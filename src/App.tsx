@@ -13,6 +13,7 @@ import Logout from './pages/Logout';
 import Usuarios from './pages/Usuarios';
 import Auditoria from './pages/Auditoria';
 import Configuracoes from './pages/Configuracoes';
+import Gerenciamento from './pages/Gerenciamento';
 import { useAuth } from './context/AuthContext'; 
 
 // Componente de Layout Privado
@@ -90,15 +91,16 @@ const App: React.FC = () => {
         {/* ROTAS PRIVADAS (Aninhamento) */}
         {/* path="/" define o layout base para todas as rotas filhas */}
         <Route path="/" element={<PrivateLayout />}>
-            {/* Rota principal (índice) do layout privado: / */}
-            <Route index element={<Dashboard />} /> 
-            <Route path="dashboard" element={<Dashboard />} />
+        {/* Rota principal (índice) do layout privado: / */}
+        <Route index element={<Dashboard />} /> 
+        <Route path="dashboard" element={<Dashboard />} />
             
             {/* Rotas de Exemplo (Caminhos relativos) */}
             <Route path="ocorrencias" element={<Ocorrencias />} />
             <Route path="usuarios" element={<Usuarios />} />
             <Route path="auditoria" element={<Auditoria />} />
             <Route path="configuracoes" element={<Configuracoes />} />
+            <Route path="gerenciamento" element={<Gerenciamento />} />
 
         </Route>
     </Routes>

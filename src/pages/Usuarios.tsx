@@ -20,6 +20,7 @@ interface UsuarioItem {
 	matricula?: string;
 	nome_guerra?: string | null;
 	posto_grad?: string | null;
+	id_unidade_operacional_fk?: string | null;
 }
 
 export default function Usuarios() {
@@ -41,6 +42,11 @@ export default function Usuarios() {
 	// removido por enquanto para evitar variáveis não utilizadas
 
 	useEffect(() => { carregarUsuarios(); }, []);
+
+	// Resetar página ao buscar
+	useEffect(() => {
+		setPaginacao(prev => ({ ...prev, page: 1 }));
+	}, [search]);
 
 	const carregarUsuarios = async () => {
 		try {
@@ -84,7 +90,8 @@ export default function Usuarios() {
 	};
 
 	const goToPage = (page: number) => {
-		const totalPages = Math.max(1, Math.ceil(filtrarOrdenar().length / paginacao.limit));
+		const usuariosFiltrados = filtrarOrdenar();
+		const totalPages = Math.max(1, Math.ceil(usuariosFiltrados.length / paginacao.limit));
 		if (page >= 1 && page <= totalPages) {
 			setPaginacao({ ...paginacao, page, totalPages });
 		}
@@ -116,30 +123,55 @@ export default function Usuarios() {
 		}
 	};
 
-	const handleEditarClick = (usuario: UsuarioItem) => {
-		setUsuarioParaEditar(usuario);
-		setMostrarEditar(true);
+	const handleEditarClick = async (usuario: UsuarioItem) => {
+		try {
+			// Buscar dados completos do usuário
+			console.log('Buscando dados completos do usuário:', usuario.id);
+			const usuarioCompleto = await api.adminUsuRios.getApiv3UsersById(usuario.id);
+			console.log('Dados completos recebidos:', usuarioCompleto);
+			setUsuarioParaEditar(usuarioCompleto);
+			setMostrarEditar(true);
+		} catch (e: any) {
+			console.error('Erro ao buscar usuário completo:', e);
+			// Se falhar, usa os dados básicos que já temos
+			setUsuarioParaEditar(usuario);
+			setMostrarEditar(true);
+		}
 	};
 
 	const handleAtualizarUsuario = async (payload: EditarUsuarioPayload) => {
 		if (!usuarioParaEditar) return;
 		try {
 			console.log('Payload de edição recebido:', payload);
-			// Ajustar para o formato da API: name, email, profile (sem matrícula no update)
+			// Ajustar para o formato da API: nome, email e tipo_perfil (outros campos como null)
 			const requestBody = {
-				name: payload.nome,
+				nome: payload.nome,
 				email: payload.email,
-				profile: payload.tipo_perfil
+				tipo_perfil: payload.tipo_perfil,
+				matricula: usuarioParaEditar.matricula || null,
+				nome_guerra: null,
+				posto_grad: null,
+				id_unidade_operacional_fk: null
 			};
 			
-			console.log('Atualizando usuário:', usuarioParaEditar.id, requestBody);
+			console.log('Atualizando usuário ID:', usuarioParaEditar.id);
+			console.log('Request Body:', JSON.stringify(requestBody, null, 2));
 			await api.adminUsuRios.putApiv3Users(usuarioParaEditar.id, requestBody as any);
+			console.log('Usuário atualizado com sucesso!');
 			setMostrarEditar(false);
 			setUsuarioParaEditar(null);
 			await carregarUsuarios();
 		} catch (e: any) {
 			console.error('Erro ao atualizar usuário', e);
-			console.error('Detalhes do erro:', e?.body);
+			console.error('Status:', e?.status);
+			console.error('Body completo:', JSON.stringify(e?.body, null, 2));
+			console.error('Detalhes do erro (array):', e?.body);
+			if (Array.isArray(e?.body)) {
+				e.body.forEach((err: any, idx: number) => {
+					console.error(`Erro ${idx + 1}:`, JSON.stringify(err, null, 2));
+				});
+			}
+			console.error('Message:', e?.message);
 			throw e;
 		}
 	};
@@ -374,14 +406,83 @@ export default function Usuarios() {
 					<button onClick={() => goToPage(paginacao.page - 1)} disabled={paginacao.page === 1} className="flex items-center justify-center h-10 w-12 rounded-xl bg-white border border-[rgba(6,28,67,0.4)] hover:bg-[#edeefc] hover:shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm">
 						<span className="text-[#202224] font-['Poppins'] text-base font-medium">‹</span>
 					</button>
-					{Array.from({ length: Math.min(5, paginacao.totalPages) }, (_, i) => {
-						const pageNumber = i + 1;
-						const isActive = pageNumber === paginacao.page;
-						return (
-							<button key={pageNumber} onClick={() => goToPage(pageNumber)} className={`flex items-center justify-center h-10 w-12 rounded-xl transition-all font-['Poppins'] text-sm font-medium border shadow-sm ${isActive ? 'bg-[#edeefc] text-[#202224] border-[rgba(6,28,67,0.4)] shadow-md' : 'bg-white text-[#202224] hover:bg-[#edeefc] hover:shadow-md border-[rgba(6,28,67,0.4)]'}`}>{pageNumber}</button>
-						);
-					})}
-					<button onClick={() => goToPage(paginacao.page + 1)} disabled={paginacao.page === paginacao.totalPages} className="flex items-center justify-center h-10 w-12 rounded-xl bg-white border border-[rgba(6,28,67,0.4)] hover:bg-[#edeefc] hover:shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm">
+					{(() => {
+						const usuariosFiltrados = filtrarOrdenar();
+						const totalPages = Math.max(1, Math.ceil(usuariosFiltrados.length / paginacao.limit));
+						const maxPaginasVisiveis = 5;
+						let paginaInicio = Math.max(1, paginacao.page - Math.floor(maxPaginasVisiveis / 2));
+						let paginaFim = Math.min(totalPages, paginaInicio + maxPaginasVisiveis - 1);
+						
+						// Ajusta o início se estiver muito próximo do fim
+						if (paginaFim - paginaInicio < maxPaginasVisiveis - 1) {
+							paginaInicio = Math.max(1, paginaFim - maxPaginasVisiveis + 1);
+						}
+						
+						const paginas = [];
+						
+						// Primeira página
+						if (paginaInicio > 1) {
+							paginas.push(
+								<button
+									key={1}
+									onClick={() => goToPage(1)}
+									className="flex items-center justify-center h-10 w-12 rounded-xl transition-all font-['Poppins'] text-sm font-medium border shadow-sm bg-white text-[#202224] hover:bg-[#edeefc] hover:shadow-md border-[rgba(6,28,67,0.4)]"
+								>
+									1
+								</button>
+							);
+							
+							if (paginaInicio > 2) {
+								paginas.push(
+									<span key="dots-start" className="flex items-center justify-center h-10 w-12 text-[#202224] font-['Poppins'] text-sm">
+										...
+									</span>
+								);
+							}
+						}
+						
+						// Páginas intermediárias
+						for (let i = paginaInicio; i <= paginaFim; i++) {
+							const isActive = i === paginacao.page;
+							paginas.push(
+								<button
+									key={i}
+									onClick={() => goToPage(i)}
+									className={`flex items-center justify-center h-10 w-12 rounded-xl transition-all font-['Poppins'] text-sm font-medium border shadow-sm ${
+										isActive 
+											? 'bg-[#edeefc] text-[#202224] border-[rgba(6,28,67,0.4)] shadow-md' 
+											: 'bg-white text-[#202224] hover:bg-[#edeefc] hover:shadow-md border-[rgba(6,28,67,0.4)]'
+									}`}
+								>
+									{i}
+								</button>
+							);
+						}
+						
+						// Última página
+						if (paginaFim < totalPages) {
+							if (paginaFim < totalPages - 1) {
+								paginas.push(
+									<span key="dots-end" className="flex items-center justify-center h-10 w-12 text-[#202224] font-['Poppins'] text-sm">
+										...
+									</span>
+								);
+							}
+							
+							paginas.push(
+								<button
+									key={totalPages}
+									onClick={() => goToPage(totalPages)}
+									className="flex items-center justify-center h-10 w-12 rounded-xl transition-all font-['Poppins'] text-sm font-medium border shadow-sm bg-white text-[#202224] hover:bg-[#edeefc] hover:shadow-md border-[rgba(6,28,67,0.4)]"
+								>
+									{totalPages}
+								</button>
+							);
+						}
+						
+						return paginas;
+					})()}
+					<button onClick={() => goToPage(paginacao.page + 1)} disabled={paginacao.page === Math.max(1, Math.ceil(filtrarOrdenar().length / paginacao.limit))} className="flex items-center justify-center h-10 w-12 rounded-xl bg-white border border-[rgba(6,28,67,0.4)] hover:bg-[#edeefc] hover:shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm">
 						<span className="text-[#202224] font-['Poppins'] text-base font-medium">›</span>
 					</button>
 				</div>
