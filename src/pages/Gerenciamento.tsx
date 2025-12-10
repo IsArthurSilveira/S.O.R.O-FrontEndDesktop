@@ -281,7 +281,7 @@ export default function Gerenciamento() {
   if (!entidadeSelecionada) {
     return (
       <div className="flex flex-col h-full items-center justify-center">
-        <div className="-mt-6 flex flex-col h-full w-full max-w-[328px] mx-auto">
+        <div className="-mt-6 flex flex-col h-full w-full mx-auto max-w-full sm:max-w-[600px] md:max-w-[900px] lg:max-w-[1200px] xl:max-w-[1400px] 2xl:max-w-[1800px] px-2 sm:px-6 lg:px-12">
           <div className="mb-6 mt-[12px]">
             <h1 className="font-['Poppins'] font-semibold text-base text-[#202224]">
               Gerenciamento de Dados
@@ -291,7 +291,7 @@ export default function Gerenciamento() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {entidadesConfig.map((entidade) => {
               const Icon = entidade.icon;
               return (
@@ -325,7 +325,7 @@ export default function Gerenciamento() {
 
   return (
     <div className="flex flex-col h-full items-center justify-center">
-      <div className="-mt-6 flex flex-col h-full w-full max-w-[328px] mx-auto">
+      <div className="-mt-6 flex flex-col h-full w-full mx-auto max-w-full sm:max-w-[600px] md:max-w-[900px] lg:max-w-[1200px] xl:max-w-[1400px] 2xl:max-w-[1800px] px-2 sm:px-6 lg:px-12">
         <div className="mb-3 mt-[12px] flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
             <button
