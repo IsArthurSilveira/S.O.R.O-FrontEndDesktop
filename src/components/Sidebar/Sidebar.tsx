@@ -40,13 +40,32 @@ export default function Sidebar({ expanded = false, setExpanded = () => {} }: Si
   
   const visibleItems = filterItems(allItems);
 
+  // Handlers para expansão - apenas em desktop
+  const handleMouseEnter = () => {
+    if (window.innerWidth >= 1024) { // lg breakpoint
+      setExpanded(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (window.innerWidth >= 1024) { // lg breakpoint
+      setExpanded(false);
+    }
+  };
+
   return (
-    <aside 
-      className={`h-screen fixed top-0 left-0 z-20 bg-white dark:bg-[#1a1a1a] border-r border-[rgba(6,28,67,0.24)] dark:border-[rgba(255,255,255,0.1)] flex flex-col transition-all duration-300 ease-in-out ${expanded ? 'w-64' : 'w-20'}`}
-      onMouseEnter={() => setExpanded(true)}
-      onMouseLeave={() => setExpanded(false)}
+    <aside
+      className={`fixed top-0 left-0 z-40 bg-white dark:bg-[#1a1a1a] border-r border-[rgba(6,28,67,0.24)] dark:border-[rgba(255,255,255,0.1)] flex flex-col transition-all duration-300 ease-in-out
+        h-screen
+        w-16 sm:w-20 lg:w-20
+        ${expanded ? 'lg:w-64' : 'lg:w-20'}
+        ${expanded ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'}
+        shadow-lg
+      `}
+      style={{ minWidth: expanded ? 256 : 64 }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      
       {/* Profile Section */}
       <div className={`flex items-center gap-2 h-16 border-b border-[rgba(6,28,67,0.24)] dark:border-[rgba(255,255,255,0.1)] ${!expanded ? 'justify-center px-2' : 'px-3'}`}>
         <div className="w-[42px] h-[42px] flex items-center justify-center shrink-0">
@@ -66,18 +85,17 @@ export default function Sidebar({ expanded = false, setExpanded = () => {} }: Si
 
       {/* Navigation */}
       <SidebarContext.Provider value={{ expanded }}>
-        <nav role="navigation" aria-label="Principal" className="flex-1 flex flex-col gap-3 mt-5 px-3"> 
+        <nav role="navigation" aria-label="Principal" className="flex-1 flex flex-col gap-3 mt-5 px-3">
           {visibleItems.map((item) => {
             const isActive = location.pathname === item.href || (location.pathname === '/' && item.href === '/');
-            const iconUrl = item.icon as string; 
-
+            const iconUrl = item.icon as string;
             return (
-              <SidebarItem 
-                key={item.href} 
-                to={item.href} 
+              <SidebarItem
+                key={item.href}
+                to={item.href}
                 iconUrl={iconUrl}
                 text={item.title}
-                active={isActive} 
+                active={isActive}
                 expanded={expanded}
               />
             );
@@ -120,7 +138,9 @@ function SidebarItem({ iconUrl, text, active, to, expanded }: SidebarItemProps) 
     <li className='w-full list-none'>
       <NavLink 
         to={to || '#'} 
-        className={`relative flex items-center py-3 font-medium rounded-2xl cursor-pointer transition-colors group ${expanded ? 'px-3 gap-3' : 'justify-center'} ${active ? activeClasses : hoverClasses}`}
+        className={`relative flex items-center py-3 lg:py-3 font-medium rounded-2xl cursor-pointer transition-colors group ${
+          expanded ? 'px-3 gap-3' : 'justify-center'
+        } ${active ? activeClasses : hoverClasses} min-h-[44px]`}
       >
         {/* Ícone */}
         <div className="w-6 h-6 flex items-center justify-center shrink-0">
@@ -134,9 +154,9 @@ function SidebarItem({ iconUrl, text, active, to, expanded }: SidebarItemProps) 
           </span>
         )}
 
-        {/* Tooltip - Apenas quando colapsado */}
+        {/* Tooltip - Apenas quando colapsado em desktop */}
         {!expanded && (
-          <div className="absolute left-full rounded-md px-2 py-1 ml-4 bg-card dark:bg-[#2a2a2a] shadow-md text-base text-foreground dark:text-white invisible opacity-0 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-30 whitespace-nowrap">
+          <div className="hidden lg:block absolute left-full rounded-md px-2 py-1 ml-4 bg-card dark:bg-[#2a2a2a] shadow-md text-base text-foreground dark:text-white invisible opacity-0 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-30 whitespace-nowrap">
             {text}
           </div>
         )}

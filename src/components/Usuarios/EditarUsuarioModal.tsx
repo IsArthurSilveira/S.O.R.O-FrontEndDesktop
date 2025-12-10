@@ -113,43 +113,43 @@ export default function EditarUsuarioModal({ isOpen, onClose, onSubmit, usuario 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-[650px] flex flex-col shadow-lg">
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-2xl w-full max-w-[650px] flex flex-col shadow-lg max-h-[90vh]">
         {/* Header */}
         <div className="bg-white border-b border-[#e9eaeb]">
-          <div className="flex gap-3 items-center pt-4 px-5 pb-3">
-            <UserCircle className="w-6 h-6 text-gray-600 shrink-0" />
+          <div className="flex gap-2 sm:gap-3 items-center pt-3 sm:pt-4 px-4 sm:px-5 pb-2 sm:pb-3">
+            <UserCircle className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 shrink-0" />
             <div className="flex-1 min-w-0">
-              <h2 className="font-['Poppins'] font-semibold text-sm text-[#181d27]">
+              <h2 className="font-['Poppins'] font-semibold text-xs sm:text-sm text-[#181d27]">
                 Editar usuário
               </h2>
             </div>
             <button 
               onClick={onClose}
-              className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors shrink-0"
+              className="p-1 sm:p-1.5 hover:bg-gray-100 rounded-lg transition-colors shrink-0"
             >
-              <X className="w-5 h-5 text-[#717680]" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5 text-[#717680]" />
             </button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="px-5 pt-3 pb-3 overflow-y-auto">
+        <div className="px-4 sm:px-5 pt-2 sm:pt-3 pb-2 sm:pb-3 overflow-y-auto">
           {error && (
-            <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-600 text-xs">{error}</p>
+            <div className="mb-2 sm:mb-3 p-1.5 sm:p-2 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-600 text-[10px] sm:text-xs">{error}</p>
             </div>
           )}
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2 sm:gap-3">
             {/* Nome completo */}
             <div>
-              <label className="font-['Poppins'] font-medium text-xs text-[#414651] block mb-1">
+              <label className="font-['Poppins'] font-medium text-[10px] sm:text-xs text-[#414651] block mb-1">
                 Nome completo
               </label>
               <input 
                 type="text"
-                className="w-full bg-white border border-[#d5d7da] rounded-lg shadow-sm px-3 py-2 font-['Poppins'] text-xs text-gray-900 placeholder:text-[#717680] focus:outline-none focus:border-black"
+                className="w-full bg-white border border-[#d5d7da] rounded-lg shadow-sm px-2.5 sm:px-3 py-1.5 sm:py-2 font-['Poppins'] text-[10px] sm:text-xs text-gray-900 placeholder:text-[#717680] focus:outline-none focus:border-black"
                 placeholder="Maria Silva Carvalho"
                 value={form.nome}
                 onChange={(e) => setForm({...form, nome: e.target.value})}
@@ -158,12 +158,12 @@ export default function EditarUsuarioModal({ isOpen, onClose, onSubmit, usuario 
 
             {/* Email */}
             <div>
-              <label className="font-['Poppins'] font-medium text-xs text-[#414651] block mb-1">
+              <label className="font-['Poppins'] font-medium text-[10px] sm:text-xs text-[#414651] block mb-1">
                 Email
               </label>
               <input 
                 type="email"
-                className="w-full bg-white border border-[#d5d7da] rounded-lg shadow-sm px-3 py-2 font-['Poppins'] text-xs text-gray-900 placeholder:text-[#717680] focus:outline-none focus:border-black"
+                className="w-full bg-white border border-[#d5d7da] rounded-lg shadow-sm px-2.5 sm:px-3 py-1.5 sm:py-2 font-['Poppins'] text-[10px] sm:text-xs text-gray-900 placeholder:text-[#717680] focus:outline-none focus:border-black"
                 placeholder="Maria.silva@cbm.pe.gov.br"
                 value={form.email}
                 onChange={(e) => setForm({...form, email: e.target.value})}
@@ -172,28 +172,28 @@ export default function EditarUsuarioModal({ isOpen, onClose, onSubmit, usuario 
 
             {/* Tipo de usuário */}
             <div className="mt-1">
-              <p className="font-['Poppins'] font-medium text-xs text-[#414651] mb-2">
+              <p className="font-['Poppins'] font-medium text-[10px] sm:text-xs text-[#414651] mb-1.5 sm:mb-2">
                 Tipo de usuário
               </p>
               
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
                 {tiposUsuario.map((tipo) => (
                   <button
                     key={tipo.value}
                     type="button"
                     onClick={() => setForm({...form, tipo_perfil: tipo.value})}
-                    className={`flex items-start gap-2 p-2.5 rounded-lg border transition-all ${
+                    className={`flex items-start gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-lg border transition-all ${
                       form.tipo_perfil === tipo.value 
                         ? 'border-black bg-white' 
                         : 'border-[#d5d7da] hover:border-black'
                     }`}
                   >
-                    <UserCircle className="w-5 h-5 text-gray-600 shrink-0 mt-0.5" />
+                    <UserCircle className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 shrink-0 mt-0.5" />
                     <div className="flex-1 text-left">
-                      <p className="font-['Poppins'] font-semibold text-xs text-black leading-tight">
+                      <p className="font-['Poppins'] font-semibold text-[10px] sm:text-xs text-black leading-tight">
                         {tipo.titulo}
                       </p>
-                      <p className="font-['Poppins'] text-[10px] text-black/40 leading-snug mt-0.5">
+                      <p className="font-['Poppins'] text-[8px] sm:text-[10px] text-black/40 leading-snug mt-0.5">
                         {tipo.descricao}
                       </p>
                     </div>
@@ -205,18 +205,18 @@ export default function EditarUsuarioModal({ isOpen, onClose, onSubmit, usuario 
         </div>
 
         {/* Footer */}
-        <div className="border-t border-[#e9eaeb] pt-3">
-          <div className="flex gap-2 px-5 pb-3">
+        <div className="border-t border-[#e9eaeb] pt-2 sm:pt-3">
+          <div className="flex gap-2 px-4 sm:px-5 pb-2 sm:pb-3">
             <button 
               onClick={onClose}
-              className="flex-1 bg-white border border-[#d5d7da] rounded-lg shadow-sm px-3 py-2 font-['Poppins'] font-semibold text-sm text-[#414651] hover:bg-gray-50 transition-colors"
+              className="flex-1 bg-white border border-[#d5d7da] rounded-lg shadow-sm px-2.5 sm:px-3 py-1.5 sm:py-2 font-['Poppins'] font-semibold text-xs sm:text-sm text-[#414651] hover:bg-gray-50 transition-colors"
             >
               Cancelar
             </button>
             <button 
               onClick={handleSubmit}
               disabled={saving}
-              className="flex-1 bg-[#70b37b] border border-[#a0bce8] rounded-lg shadow-sm px-3 py-2 font-['Poppins'] font-semibold text-sm text-white hover:bg-[#5fa36a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 bg-[#70b37b] border border-[#a0bce8] rounded-lg shadow-sm px-2.5 sm:px-3 py-1.5 sm:py-2 font-['Poppins'] font-semibold text-xs sm:text-sm text-white hover:bg-[#5fa36a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {saving ? 'Salvando...' : 'Atualizar'}
             </button>

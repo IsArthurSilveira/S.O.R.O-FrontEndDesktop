@@ -88,15 +88,7 @@ export default function NovaOcorrencia() {
         client.ocorrNcias.getApiv3Ocorrencias(undefined, undefined, undefined, 1, 1)
       ]);
 
-      console.log('Dados carregados:', {
-        naturezas: naturezasData?.length || 0,
-        grupos: gruposData?.length || 0,
-        subgrupos: subgruposData?.length || 0,
-        formasAcervo: formasAcervoData?.length || 0,
-        municipios: municipiosData?.length || 0,
-        bairros: bairrosData?.length || 0
-      });
-
+      // Dados carregados
       setNaturezas(naturezasData || []);
       setGrupos(gruposData || []);
       setSubgrupos(subgruposData || []);
@@ -104,12 +96,9 @@ export default function NovaOcorrencia() {
       setMunicipios(municipiosData || []);
       setBairros(bairrosData || []);
 
-      // Calcular próximo ID (simulação)
+      // Calcula próximo ID (simulação)
       const totalOcorrencias = ocorrenciasData?.total || 0;
       setNextOcorrenciaId(`#${String(totalOcorrencias + 1).padStart(6, '0')}`);
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error);
-      alert('Erro ao carregar dados. Verifique o console.');
     } finally {
       setLoading(false);
     }
@@ -122,7 +111,6 @@ export default function NovaOcorrencia() {
         (g) => g.id_natureza_fk === formData.id_natureza_fk
       );
       setGruposFiltrados(filtered);
-      
       setFormData((prev) => ({
         ...prev,
         id_grupo_fk: '',
@@ -225,15 +213,14 @@ export default function NovaOcorrencia() {
       };
 
       console.log('Enviando ocorrência:', ocorrenciaInput);
-      
+          // Enviando ocorrência
       await client.ocorrNcias.postApiv3Ocorrencias(ocorrenciaInput);
       
       alert('Ocorrência registrada com sucesso!');
       navigate('/ocorrencias');
     } catch (error: any) {
-      console.error('Erro ao salvar ocorrência:', error);
-      console.error('Detalhes do erro:', error?.body);
-      console.error('Body completo:', JSON.stringify(error?.body, null, 2));
+          // Erro ao salvar ocorrência
+          // Mostra erros de validação específicos
       
       // Mostrar erros de validação específicos
       if (error?.body && Array.isArray(error.body)) {
@@ -252,38 +239,38 @@ export default function NovaOcorrencia() {
   };
 
   return (
-    <div className="bg-white border border-gray-100 rounded-[14px] shadow-lg w-full h-full overflow-auto">
+    <div className="bg-white border border-gray-100 rounded-lg sm:rounded-[14px] shadow-lg w-full h-full overflow-y-auto overflow-x-hidden">
       {/* Header */}
-      <div className="border-b border-gray-100 h-[70px] px-5 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="text-[15px] font-medium text-[#0a1c3e]">
+      <div className="sticky top-0 bg-white z-10 border-b border-gray-100 min-h-[60px] sm:h-[70px] px-3 sm:px-5 py-3 sm:py-0 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <h1 className="text-sm sm:text-[15px] font-medium text-[#0a1c3e]">
             Registro de Nova Ocorrência
           </h1>
           {nextOcorrenciaId && (
-            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+            <span className="text-[10px] sm:text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-md whitespace-nowrap">
               Próximo ID: {nextOcorrenciaId}
             </span>
           )}
           {loading && (
-            <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-md animate-pulse">
+            <span className="text-[10px] sm:text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-md animate-pulse whitespace-nowrap">
               Carregando dados...
             </span>
           )}
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             type="button"
             onClick={handleSubmit}
             disabled={loading}
-            className="bg-[#c6f4ce] hover:bg-[#b0e8b8] text-black font-medium text-[13px] px-6 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+            className="flex-1 sm:flex-none bg-[#c6f4ce] hover:bg-[#b0e8b8] text-black font-medium text-xs sm:text-[13px] px-4 sm:px-6 py-1.5 rounded-lg transition-colors disabled:opacity-50"
           >
             {loading ? 'Salvando...' : 'Salvar Ocorrência'}
           </button>
           <button
             type="button"
             onClick={handleCancel}
-            className="bg-white hover:bg-gray-50 border border-gray-100 text-[#0a1c3e] font-medium text-[13px] px-6 py-1.5 rounded-lg transition-colors"
+            className="flex-1 sm:flex-none bg-white hover:bg-gray-50 border border-gray-100 text-[#0a1c3e] font-medium text-xs sm:text-[13px] px-4 sm:px-6 py-1.5 rounded-lg transition-colors"
           >
             Cancelar
           </button>
@@ -291,12 +278,12 @@ export default function NovaOcorrencia() {
       </div>
 
       {/* Form Content */}
-      <div className="p-5">
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="p-3 sm:p-5">
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
           {/* LINHA 1: Classificação + Data/Hora */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
             {/* Coluna 1 e 2: Classificação (2 colunas lado a lado) */}
-            <div className="col-span-2 grid grid-cols-2 gap-4">
+            <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {/* Lado Esquerdo */}
               <div className="space-y-3">
                 <div className="border-b border-gray-100 pb-1">
@@ -310,7 +297,7 @@ export default function NovaOcorrencia() {
                     name="id_natureza_fk"
                     value={formData.id_natureza_fk}
                     onChange={(value) => {
-                      console.log('Natureza selecionada:', value);
+                        // Natureza selecionada
                       handleSelectChange('id_natureza_fk', value);
                     }}
                     options={(() => {
@@ -318,7 +305,7 @@ export default function NovaOcorrencia() {
                         value: n.id_natureza || '',
                         label: n.descricao,
                       }));
-                      console.log('Opções de Natureza:', opts.length, opts);
+                        // Opções de Natureza
                       return opts;
                     })()}
                     placeholder="Selecione..."
@@ -447,7 +434,7 @@ export default function NovaOcorrencia() {
           </div>
 
           {/* LINHA 2: Localização */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
             {/* Coluna Esquerda - Formulário */}
             <div className="space-y-3">
               <div className="border-b border-gray-100 pb-1">
@@ -519,7 +506,7 @@ export default function NovaOcorrencia() {
 
             {/* Coluna Direita - Mapa */}
             <div className="flex items-end justify-center">
-              <div className="w-full h-[200px]">
+              <div className="w-full h-[180px] sm:h-[200px]">
                 <MapView 
                   municipio={municipios.find(m => m.id_municipio === formData.id_municipio_fk)?.nome_municipio}
                   bairro={bairros.find(b => b.id_bairro === formData.id_bairro_fk)?.nome_bairro}

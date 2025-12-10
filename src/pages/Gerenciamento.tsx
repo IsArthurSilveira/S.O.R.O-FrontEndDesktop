@@ -77,7 +77,7 @@ export default function Gerenciamento() {
     }
   }, [entidadeSelecionada]);
 
-  // Resetar página ao buscar
+  // Reseta página ao buscar
   useEffect(() => {
     setPaginaAtual(1);
   }, [termoBusca]);
@@ -154,7 +154,7 @@ export default function Gerenciamento() {
       
       setDados(dadosNormalizados);
     } catch (error) {
-      console.error('Erro ao carregar dados:', error);
+      // Erro ao carregar dados
     } finally {
       setLoading(false);
     }
@@ -236,7 +236,7 @@ export default function Gerenciamento() {
       await carregarDados();
       setModalAberto(false);
     } catch (error) {
-      console.error('Erro ao salvar:', error);
+      // Erro ao salvar dados
       throw error;
     }
   };
@@ -273,15 +273,15 @@ export default function Gerenciamento() {
       await carregarDados();
       setModalDeletarAberto(false);
     } catch (error) {
-      console.error('Erro ao deletar:', error);
+      // Erro ao deletar dados
       throw error;
     }
   };
 
   if (!entidadeSelecionada) {
     return (
-      <div className="flex flex-col h-full">
-        <div className="-mt-6 flex flex-col h-full">
+      <div className="flex flex-col h-full items-center justify-center">
+        <div className="-mt-6 flex flex-col h-full w-full max-w-[328px] mx-auto">
           <div className="mb-6 mt-[12px]">
             <h1 className="font-['Poppins'] font-semibold text-base text-[#202224]">
               Gerenciamento de Dados
@@ -291,28 +291,29 @@ export default function Gerenciamento() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {entidadesConfig.map((entidade) => {
               const Icon = entidade.icon;
               return (
-              <button
-                key={entidade.id}
-                onClick={() => handleSelecionarEntidade(entidade.id as TipoEntidade)}
-                className="flex flex-col items-start gap-3 p-5 bg-white border border-[#e9eaeb] rounded-xl hover:border-black hover:shadow-md transition-all text-left"
-              >
-                <div className="bg-[#edeefc] p-3 rounded-lg">
-                  <Icon className="w-6 h-6 text-[#202224]" />
-                </div>
-                <div>
-                  <h3 className="font-['Poppins'] font-semibold text-sm text-[#202224]">
-                    {entidade.titulo}
-                  </h3>
-                  <p className="font-['Poppins'] text-xs text-[#535862] mt-1">
-                    {entidade.descricao}
-                  </p>
-                </div>
-              </button>
-            );
+                <button
+                  key={entidade.id}
+                  onClick={() => handleSelecionarEntidade(entidade.id as TipoEntidade)}
+                  className="flex flex-col items-start gap-3 p-5 bg-white border border-[#e9eaeb] rounded-xl hover:border-black hover:shadow-md transition-all text-left"
+                  style={{ width: '100%' }}
+                >
+                  <div className="bg-[#edeefc] p-3 rounded-lg">
+                    <Icon className="w-6 h-6 text-[#202224]" />
+                  </div>
+                  <div>
+                    <h3 className="font-['Poppins'] font-semibold text-sm text-[#202224]">
+                      {entidade.titulo}
+                    </h3>
+                    <p className="font-['Poppins'] text-xs text-[#535862] mt-1">
+                      {entidade.descricao}
+                    </p>
+                  </div>
+                </button>
+              );
             })}
           </div>
         </div>
@@ -323,9 +324,9 @@ export default function Gerenciamento() {
   const entidadeAtual = entidadesConfig.find(e => e.id === entidadeSelecionada);
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="-mt-6 flex flex-col h-full">
-        <div className="mb-3 mt-[12px] flex items-center justify-between">
+    <div className="flex flex-col h-full items-center justify-center">
+      <div className="-mt-6 flex flex-col h-full w-full max-w-[328px] mx-auto">
+        <div className="mb-3 mt-[12px] flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
             <button
               onClick={handleVoltar}
@@ -345,15 +346,16 @@ export default function Gerenciamento() {
 
           <button
             onClick={handleAdicionar}
-            className="flex items-center gap-2 px-4 py-2 bg-[#70b37b] text-white rounded-lg hover:bg-[#5fa36a] transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1.5 bg-[#70b37b] text-white rounded-md hover:bg-[#5fa36a] transition-colors text-xs"
+            style={{ minWidth: 'auto', fontSize: '13px' }}
           >
-            <Plus className="w-4 h-4" />
-            <span className="font-['Poppins'] text-sm font-medium">Adicionar</span>
+            <Plus className="w-3.5 h-3.5" />
+            <span className="font-['Poppins'] font-medium">Adicionar</span>
           </button>
         </div>
 
         {/* Barra de Pesquisa */}
-        <div className="mb-3 flex items-center gap-2 px-3 py-2 bg-white border border-[rgba(6,28,67,0.4)] rounded-lg">
+        <div className="mb-3 flex items-center gap-2 px-3 py-2 bg-white border border-[rgba(6,28,67,0.4)] rounded-lg w-full">
           <Search className="w-4 h-4 text-gray-400" />
           <input
             type="text"
@@ -364,14 +366,15 @@ export default function Gerenciamento() {
           />
         </div>
 
-        <div className="flex flex-col gap-0 overflow-hidden rounded-tl-lg rounded-tr-lg flex-1 min-h-0 border border-[rgba(6,28,67,0.4)]">
-          <div className="bg-[#edeefc] border-b border-[rgba(6,28,67,0.4)] flex items-center gap-4 h-10 px-4 py-2 flex-shrink-0">
+        <div className="flex flex-col gap-0 overflow-hidden rounded-tl-lg rounded-tr-lg flex-1 min-h-0 border border-[rgba(6,28,67,0.4)] w-full">
+          {/* Cabeçalho só aparece em telas médias para cima */}
+          <div className="hidden sm:flex bg-[#edeefc] border-b border-[rgba(6,28,67,0.4)] items-center gap-4 h-10 px-4 py-2 flex-shrink-0">
             <p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 w-32">ID</p>
             <p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 flex-1">NOME</p>
             <p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 w-24">AÇÕES</p>
           </div>
 
-          <div className="flex flex-col overflow-y-auto flex-1 bg-white">
+          <div className="flex flex-col overflow-y-auto flex-1 bg-white w-full">
             {loading ? (
               <div className="flex items-center justify-center h-full">
                 <p className="font-['Poppins'] text-sm text-[#202224] opacity-60">Carregando...</p>
@@ -390,7 +393,7 @@ export default function Gerenciamento() {
               </div>
             ) : (
               (() => {
-                // Filtrar dados pela busca
+                // Filtra dados pela busca
                 const dadosFiltrados = termoBusca.trim()
                   ? dados.filter((item) => {
                       const termo = termoBusca.toLowerCase().trim();
@@ -400,48 +403,111 @@ export default function Gerenciamento() {
                     })
                   : dados;
                 
-                // Aplicar paginação
+                // Aplica paginação
                 const indiceInicio = (paginaAtual - 1) * itensPorPagina;
                 const indiceFim = indiceInicio + itensPorPagina;
                 const dadosPaginados = dadosFiltrados.slice(indiceInicio, indiceFim);
                 
-                return dadosPaginados.map((item) => (
-                <div key={item.id} className="border-b border-[rgba(6,28,67,0.4)] h-10">
-                  <div className="flex items-center gap-4 px-4 h-full">
-                    <p className="font-['Poppins'] font-medium text-xs text-[#202224] opacity-90 w-32 truncate">
-                      #{item.id.slice(0, 8)}
-                    </p>
-                    <p className="font-['Poppins'] font-medium text-xs text-[#202224] opacity-90 flex-1 truncate">
-                      {item.nome || item.descricao || '-'}
-                    </p>
-                    <div className="flex items-center gap-2 w-24">
-                      {/* Botão editar desabilitado para entidades sem suporte PUT */}
-                      {(entidadeSelecionada === 'bairros' || entidadeSelecionada === 'municipios') ? (
-                        <button 
-                          onClick={() => handleEditar(item)}
-                          className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                return (
+                  <>
+                    {/* Cards para mobile - estilo igual Ocorrências */}
+                    <div className="flex sm:hidden flex-col gap-2 overflow-y-auto flex-1 pb-2 min-h-0 w-full">
+                      {dadosPaginados.map((item) => (
+                        <div
+                          key={item.id}
+                          className="bg-white border border-[rgba(6,28,67,0.4)] rounded-lg p-1.5 space-y-1"
                         >
-                          <Edit2 className="w-4 h-4 text-[#202224]" />
-                        </button>
-                      ) : (
-                        <button 
-                          disabled
-                          className="p-1.5 rounded transition-colors opacity-30 cursor-not-allowed"
-                          title="Edição não disponível"
-                        >
-                          <Edit2 className="w-4 h-4 text-[#202224]" />
-                        </button>
-                      )}
-                      <button 
-                        onClick={() => handleDeletar(item)}
-                        className="p-1.5 hover:bg-red-50 rounded transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4 text-red-600" />
-                      </button>
+                          {/* Header do Card */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1">
+                              {/* Ícone da entidade */}
+                              {entidadeAtual?.icon && (
+                                <span className="bg-[#edeefc] rounded p-1">
+                                  {entidadeAtual.icon && <entidadeAtual.icon className="w-3.5 h-3.5 text-[#202224]" />}
+                                </span>
+                              )}
+                              <span className="font-['Poppins'] font-bold text-[9px] text-[#202224]">
+                                {item.nome || item.descricao || `#${item.id.slice(0, 8)}`}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-0.5 bg-[#edeefc] rounded px-1 py-0.5">
+                              <p className="font-['Poppins'] font-medium text-[8px] text-black">
+                                ID: #{item.id.slice(0, 8)}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Informações extras podem ser adicionadas aqui */}
+
+                          {/* Ações */}
+                          <div className="flex items-center gap-1 pt-1 border-t border-[rgba(6,28,67,0.1)]">
+                            {(entidadeSelecionada === 'bairros' || entidadeSelecionada === 'municipios') ? (
+                              <button
+                                className="flex-1 flex items-center justify-center bg-[#edeefc] hover:bg-[#dfe0fa] rounded py-0.5 transition-colors"
+                                onClick={() => handleEditar(item)}
+                              >
+                                <Edit2 className="w-3 h-3 text-[#202224]" />
+                              </button>
+                            ) : (
+                              <button
+                                disabled
+                                className="flex-1 flex items-center justify-center bg-[#edeefc] rounded py-0.5 opacity-30 cursor-not-allowed"
+                                title="Edição não disponível"
+                              >
+                                <Edit2 className="w-3 h-3 text-[#202224]" />
+                              </button>
+                            )}
+                            <button
+                              className="flex-1 flex items-center justify-center bg-[#edeefc] hover:bg-[#fadede] rounded py-0.5 transition-colors"
+                              onClick={() => handleDeletar(item)}
+                            >
+                              <Trash2 className="w-3 h-3 text-red-600" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                </div>
-              ));
+                    {/* Tabela para desktop/tablet */}
+                    <div className="hidden sm:flex flex-col w-full">
+                      {dadosPaginados.map((item) => (
+                        <div key={item.id} className="border-b border-[rgba(6,28,67,0.4)] h-10">
+                          <div className="flex items-center gap-4 px-4 h-full">
+                            <p className="font-['Poppins'] font-medium text-xs text-[#202224] opacity-90 w-32 truncate">
+                              #{item.id.slice(0, 8)}
+                            </p>
+                            <p className="font-['Poppins'] font-medium text-xs text-[#202224] opacity-90 flex-1 truncate">
+                              {item.nome || item.descricao || '-'}
+                            </p>
+                            <div className="flex items-center gap-2 w-24">
+                              {(entidadeSelecionada === 'bairros' || entidadeSelecionada === 'municipios') ? (
+                                <button 
+                                  onClick={() => handleEditar(item)}
+                                  className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                                >
+                                  <Edit2 className="w-4 h-4 text-[#202224]" />
+                                </button>
+                              ) : (
+                                <button 
+                                  disabled
+                                  className="p-1.5 rounded transition-colors opacity-30 cursor-not-allowed"
+                                  title="Edição não disponível"
+                                >
+                                  <Edit2 className="w-4 h-4 text-[#202224]" />
+                                </button>
+                              )}
+                              <button 
+                                onClick={() => handleDeletar(item)}
+                                className="p-1.5 hover:bg-red-50 rounded transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4 text-red-600" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                );
               })()
             )}
           </div>
@@ -449,7 +515,7 @@ export default function Gerenciamento() {
 
         {/* Paginação */}
         {!loading && dados.length > 0 && (() => {
-          // Calcular total de páginas baseado nos dados filtrados
+          // Calcula total de páginas baseado nos dados filtrados
           const dadosFiltrados = termoBusca.trim()
             ? dados.filter((item) => {
                 const termo = termoBusca.toLowerCase().trim();
@@ -460,7 +526,7 @@ export default function Gerenciamento() {
             : dados;
           const totalPaginas = Math.ceil(dadosFiltrados.length / itensPorPagina);
           return totalPaginas > 1 && (
-            <div className="flex items-center justify-center gap-2 h-[88px] flex-shrink-0">
+            <div className="flex items-center justify-center gap-2 h-[88px] flex-shrink-0 w-full">
               {/* Botão Anterior */}
               <button
                 onClick={() => setPaginaAtual(p => Math.max(1, p - 1))}

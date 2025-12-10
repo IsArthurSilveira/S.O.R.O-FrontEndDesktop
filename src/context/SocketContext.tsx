@@ -6,25 +6,16 @@ import { useAuth } from './AuthContext';
 import type { SocketContextType } from '../types'; 
 
 // URL da API (deve ser a URL completa, ex: 'https://api-s-o-r-o.onrender.com/api/v3')
-// Adicionado um path completo ao fallback de localhost para refletir a nova estrutura da API
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v3';
 
-// CORREÇÃO CRÍTICA: Extrai a ORIGEM (protocolo + host) de forma robusta usando a classe URL.
-// Isso evita erros de parsing como "ws://https/".
+// Extrai a ORIGEM (protocolo + host) de forma robusta usando a classe URL.
+// Extrai a origem da URL para uso no Socket.IO
 let SOCKET_URL: string;
 try {
-    // 1. Cria um objeto URL a partir da BASE_URL (remove barras finais desnecessárias antes de parsear)
-    const url = new URL(BASE_URL.replace(/\/+$/, '')); 
-    // 2. A propriedade 'origin' retorna o protocolo, hostname e porta (ex: https://dominio.com)
-    SOCKET_URL = url.origin; 
-    
-    // DEBUG: Se você quiser garantir que a URL correta está sendo usada, pode descomentar:
-    // console.log("SOCKET_URL extraída:", SOCKET_URL);
-
+  const url = new URL(BASE_URL.replace(/\/+$/, ''));
+  SOCKET_URL = url.origin;
 } catch (error) {
-    // Fallback de segurança em caso de URL de API completamente inválida
-    console.error("Erro fatal ao parsear BASE_URL para Socket.IO. Usando BASE_URL original.", error);
-    SOCKET_URL = BASE_URL; 
+  SOCKET_URL = BASE_URL;
 }
 
 
@@ -42,39 +33,31 @@ export const SocketContextProvider: React.FC<SocketProviderProps> = ({ children 
     let newSocket: Socket | null = null;
     
     if (isAuthenticated && token) {
-      
-      // DESCONECTA QUALQUER INSTÂNCIA EXISTENTE ANTES DE CRIAR UMA NOVA
+      // Desconecta instância anterior antes de criar nova
       if (socket) {
         socket.disconnect();
         setSocket(null);
       }
 
-      // Conecta ao servidor Socket.IO, usando a URL de ORIGEM
+      // Conecta ao servidor Socket.IO
       newSocket = io(SOCKET_URL, {
-        transports: ['websocket'], // Força o uso de WebSocket
-        forceNew: true, // Garante que uma nova instância seja criada, ignorando pools
+        transports: ['websocket'],
+        forceNew: true,
         autoConnect: true,
-        // Configurações de Reconexão para limitar o flood:
-        reconnectionAttempts: 5, // Tenta reconectar no máximo 5 vezes
-        reconnectionDelay: 1000, // Espera 1s antes de tentar de novo
-        
-        auth: {
-          token: token,
-        },
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        auth: { token },
       });
 
       newSocket.on('connect', () => {
-        console.log('Conectado ao Socket.IO com sucesso!');
+        console.log('Conectado ao Socket.IO');
       });
 
       newSocket.on('connect_error', (err) => {
-        console.error('Erro de Conexão do Socket:', err.message);
-        // Lógica para forçar logout se o token for inválido
         if (err.message === 'Token Inválido') {
-            logout();
+          logout();
         }
       });
-      
       setSocket(newSocket);
     } else {
       // Desconecta se o usuário sair ou o token for removido
@@ -84,13 +67,13 @@ export const SocketContextProvider: React.FC<SocketProviderProps> = ({ children 
       }
     }
 
-    // Função de limpeza
+    // Limpeza ao desmontar
     return () => {
       if (newSocket) {
         newSocket.disconnect();
       }
     };
-  }, [isAuthenticated, token, logout]); // Removido 'socket' da lista de dependências para evitar loop
+  }, [isAuthenticated, token, logout]);
 
   return (
     <SocketContext.Provider value={{ socket }}>
@@ -100,6 +83,7 @@ export const SocketContextProvider: React.FC<SocketProviderProps> = ({ children 
 };
 
 export const useSocket = () => {
+  // Hook para acessar o contexto do socket
   const context = useContext(SocketContext);
   if (context === undefined) {
     throw new Error('useSocket deve ser usado dentro de um SocketContextProvider');

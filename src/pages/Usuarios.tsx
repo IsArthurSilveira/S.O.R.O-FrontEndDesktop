@@ -38,8 +38,6 @@ export default function Usuarios() {
 	const [search, setSearch] = useState('');
 	const [paginacao, setPaginacao] = useState({ page: 1, totalPages: 1, total: 0, limit: 10 });
 
-	// Estado simples para feedback de envio (pode ser usado futuramente)
-	// removido por enquanto para evitar variáveis não utilizadas
 
 	useEffect(() => { carregarUsuarios(); }, []);
 
@@ -54,11 +52,7 @@ export default function Usuarios() {
 			setError(null);
 			const res = await api.adminUsuRios.getApiv3Users();
 			const list: UsuarioItem[] = Array.isArray(res) ? res : res?.data || [];
-			// Debug: inspeciona as chaves disponíveis nos primeiros itens
-			if (Array.isArray(list) && list.length) {
-				console.log('[Usuarios] Amostra de usuários recebidos:', list.slice(0, 3));
-				console.log('[Usuarios] Chaves do primeiro usuário:', Object.keys(list[0] || {}));
-			}
+			// Usuários recebidos
 			setUsuarios(list);
 			setPaginacao(prev => ({ ...prev, total: list.length, totalPages: Math.max(1, Math.ceil(list.length / prev.limit)) }));
 		} catch (err: any) {
@@ -98,14 +92,14 @@ export default function Usuarios() {
 	};
 
 	const handleDeleteClick = (usuario: UsuarioItem) => {
-		// Verificar se o usuário configurou para não mostrar o modal
+		// Verifica se o usuário configurou para não mostrar o modal
 		const naoMostrar = localStorage.getItem('naoMostrarModalDeletar');
 		
 		if (naoMostrar === 'true') {
-			// Deletar diretamente
+			// Deleta diretamente
 			confirmarDelecao(usuario.id);
 		} else {
-			// Abrir modal de confirmação
+			// Abre modal de confirmação
 			setUsuarioParaDeletar(usuario);
 			setMostrarDeletar(true);
 		}
@@ -118,22 +112,19 @@ export default function Usuarios() {
 			setUsuarioParaDeletar(null);
 			await carregarUsuarios();
 		} catch (e: any) {
-			console.error('Erro ao deletar usuário', e);
+			// Erro ao deletar usuário
 			alert('Erro ao deletar usuário: ' + (e.message || 'Erro desconhecido'));
 		}
 	};
 
 	const handleEditarClick = async (usuario: UsuarioItem) => {
 		try {
-			// Buscar dados completos do usuário
-			console.log('Buscando dados completos do usuário:', usuario.id);
+			// Busca dados completos do usuário
 			const usuarioCompleto = await api.adminUsuRios.getApiv3UsersById(usuario.id);
-			console.log('Dados completos recebidos:', usuarioCompleto);
 			setUsuarioParaEditar(usuarioCompleto);
 			setMostrarEditar(true);
 		} catch (e: any) {
-			console.error('Erro ao buscar usuário completo:', e);
-			// Se falhar, usa os dados básicos que já temos
+			// Erro ao buscar usuário completo
 			setUsuarioParaEditar(usuario);
 			setMostrarEditar(true);
 		}
@@ -142,8 +133,7 @@ export default function Usuarios() {
 	const handleAtualizarUsuario = async (payload: EditarUsuarioPayload) => {
 		if (!usuarioParaEditar) return;
 		try {
-			console.log('Payload de edição recebido:', payload);
-			// Ajustar para o formato da API: nome, email e tipo_perfil (outros campos como null)
+			// Edita usuário
 			const requestBody = {
 				nome: payload.nome,
 				email: payload.email,
@@ -153,25 +143,12 @@ export default function Usuarios() {
 				posto_grad: null,
 				id_unidade_operacional_fk: null
 			};
-			
-			console.log('Atualizando usuário ID:', usuarioParaEditar.id);
-			console.log('Request Body:', JSON.stringify(requestBody, null, 2));
 			await api.adminUsuRios.putApiv3Users(usuarioParaEditar.id, requestBody as any);
-			console.log('Usuário atualizado com sucesso!');
 			setMostrarEditar(false);
 			setUsuarioParaEditar(null);
 			await carregarUsuarios();
 		} catch (e: any) {
-			console.error('Erro ao atualizar usuário', e);
-			console.error('Status:', e?.status);
-			console.error('Body completo:', JSON.stringify(e?.body, null, 2));
-			console.error('Detalhes do erro (array):', e?.body);
-			if (Array.isArray(e?.body)) {
-				e.body.forEach((err: any, idx: number) => {
-					console.error(`Erro ${idx + 1}:`, JSON.stringify(err, null, 2));
-				});
-			}
-			console.error('Message:', e?.message);
+			// Erro ao atualizar usuário
 			throw e;
 		}
 	};
@@ -179,27 +156,19 @@ export default function Usuarios() {
 
 	const handleRegistrarUsuario = async (payload: NovoUsuarioPayload) => {
 		try {
-			console.log('Payload recebido em Usuarios.tsx:', payload);
-			// Ajustar para o formato da API: name, email, profile, matricula
+			// Registra novo usuário
 			const requestBody = {
 				name: payload.nome,
 				email: payload.email,
 				profile: payload.tipo_perfil,
 				matricula: payload.email.split('@')[0] // Gera matrícula a partir do email
 			};
-			console.log('Enviando para API:', requestBody);
 			await api.auth.postApiV3AuthRegister(requestBody as any);
 			setMostrarAdicionar(false);
 			await carregarUsuarios();
 		} catch (e: any) {
-			console.error('Erro ao registrar usuário', e);
-			console.error('Detalhes do erro:', {
-				status: e?.status,
-				statusText: e?.statusText,
-				body: e?.body,
-				message: e?.message
-			});
-			throw e; // Re-lançar o erro para o modal capturar
+			// Erro ao registrar usuário
+			throw e;
 		}
 	};
 
@@ -254,57 +223,57 @@ export default function Usuarios() {
 	};
 
 	return (
-		<div className="flex flex-col h-full">
-			<div className="-mt-6 flex flex-col h-full">
+		<div className="flex flex-col h-full overflow-hidden">
+			<div className="flex flex-col h-full px-2 sm:px-0">
 				{/* Título */}
-				<div className="mb-3 mt-[12px]">
-					<h1 className="font-['Poppins'] font-semibold text-base text-[#202224]">Lista de usuários</h1>
+				<div className="mb-4 sm:mb-5 mt-2 sm:mt-4 flex-shrink-0">
+					<h1 className="font-['Poppins'] font-semibold text-sm sm:text-base text-[#202224] leading-relaxed">Lista de usuários</h1>
 				</div>
 
 				{/* Botão Adicionar Usuário */}
-				<div className="flex justify-end mb-0">
+				<div className="flex justify-end mb-0 flex-shrink-0">
 					<button
 						onClick={() => setMostrarAdicionar(true)}
-						className="flex items-center gap-1.5 px-3 py-1.5 rounded-tl-lg rounded-tr-lg bg-[rgba(160,237,173,0.6)] border border-[rgba(6,28,67,0.4)] border-b-0 hover:bg-[rgba(160,237,173,0.8)] transition-colors"
+						className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-tl-lg rounded-tr-lg bg-[rgba(160,237,173,0.6)] border border-[rgba(6,28,67,0.4)] border-b-0 hover:bg-[rgba(160,237,173,0.8)] transition-colors"
 					>
-						<img src={UsuariosIcon} alt="Adicionar Usuário" className="w-5 h-5" />
-						<span className="font-['Poppins'] text-xs text-black">Adicionar Usuário</span>
+						<img src={UsuariosIcon} alt="Adicionar Usuário" className="w-4 h-4 sm:w-5 sm:h-5" />
+						<span className="font-['Poppins'] text-[10px] sm:text-xs text-black">Adicionar Usuário</span>
 					</button>
 				</div>
 
 				{/* Barra de Pesquisa e Filtros */}
 				<div 
-					className="flex items-center justify-between gap-3 px-3 py-2 rounded-bl-xl rounded-br-xl rounded-tl-xl border border-[rgba(6,28,67,0.4)] mb-3"
+					className="flex items-center justify-between gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-bl-xl rounded-br-xl rounded-tl-xl border border-[rgba(6,28,67,0.4)] mb-2 sm:mb-3 flex-shrink-0"
 					style={{
 						background: 'linear-gradient(90deg, rgba(242, 236, 236, 0.12) 0%, rgba(242, 236, 236, 0.12) 100%), linear-gradient(90deg, rgba(249, 249, 250, 1) 0%, rgba(249, 249, 250, 1) 100%)'
 					}}
 				>
 					{/* Pesquisa */}
-					<div className="flex items-center gap-2 flex-1 px-2 rounded-lg">
-						<img src={SearchIcon} alt="Pesquisar" className="w-5 h-5" />
+					<div className="flex items-center gap-1 sm:gap-1.5 flex-1 px-1 sm:px-2 rounded-lg min-w-0">
+						<img src={SearchIcon} alt="Pesquisar" className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
 						<input
 							type="text"
 							placeholder="Pesquisar usuário"
-							className="flex-1 bg-transparent border-none outline-none text-sm text-black placeholder:text-[rgba(0,0,0,0.2)] font-['Poppins']"
+							className="flex-1 bg-transparent border-none outline-none text-[11px] sm:text-xs text-black placeholder:text-[rgba(0,0,0,0.2)] font-['Poppins'] min-w-0"
 							value={search}
 							onChange={(e) => setSearch(e.target.value)}
 						/>
 					</div>
 
 					{/* Botões de Ação */}
-					<div className="flex items-center gap-1.5">
+					<div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
 						<button 
-							className="p-1.5 rounded-lg hover:bg-[rgba(0,0,0,0.05)] transition-colors"
+							className="p-1 sm:p-1.5 rounded-lg hover:bg-[rgba(0,0,0,0.05)] transition-colors"
 							onClick={() => { setOrdemCrescente(!ordemCrescente); }}
 							title={ordemCrescente ? 'Ordenar decrescente' : 'Ordenar crescente'}
 						>
-							<img src={SortIcon} alt="Ordenar" className="w-5 h-5" />
+							<img src={SortIcon} alt="Ordenar" className="w-4 h-4 sm:w-5 sm:h-5" />
 						</button>
 						<button 
-							className="p-1.5 rounded-lg hover:bg-[rgba(0,0,0,0.05)] transition-colors"
+							className="p-1 sm:p-1.5 rounded-lg hover:bg-[rgba(0,0,0,0.05)] transition-colors"
 							onClick={() => setMostrarFiltros(true)}
 						>
-							<img src={FilterIcon} alt="Filtrar" className="w-5 h-5" />
+							<img src={FilterIcon} alt="Filtrar" className="w-4 h-4 sm:w-5 sm:h-5" />
 						</button>
 					</div>
 				</div>
@@ -342,21 +311,23 @@ export default function Usuarios() {
 					usuario={usuarioParaEditar}
 				/>
 
-				{/* Tabela de Usuários */}
-				<div className="flex flex-col gap-0 overflow-hidden rounded-tl-lg rounded-tr-lg flex-1 min-h-0">
-					{/* Cabeçalho */}
-					<div className="bg[#edeefc] border border-[rgba(6,28,67,0.4)] flex items-center gap-4 h-10 px-4 py-2 rounded-tl-lg rounded-tr-lg flex-shrink-0">
-						<p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 w-32">ID</p>
-						<p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 w-52">NOME</p>
-						<p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 w-64">EMAIL</p>
-						<p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 w-40">PERFIL DE ACESSO</p>
-						<p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 w-36">STATUS</p>
-						<p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 flex-1">DATA DE REGISTRO</p>
-						<p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 w-24">AÇÕES</p>
-					</div>
+				{/* Tabela/Cards de Usuários */}
+				<div className="flex flex-col gap-0 overflow-hidden flex-1 min-h-0">
+					{/* Versão Desktop - Tabela */}
+					<div className="hidden md:flex flex-col overflow-hidden rounded-tl-lg rounded-tr-lg flex-1 min-h-0 border border-[rgba(6,28,67,0.4)]">
+						{/* Cabeçalho */}
+						<div className="bg-[#edeefc] border-b border-[rgba(6,28,67,0.4)] flex items-center gap-4 h-10 px-4 py-2 flex-shrink-0">
+							<p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 w-32">ID</p>
+							<p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 w-52">NOME</p>
+							<p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 w-64">EMAIL</p>
+							<p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 w-40">PERFIL DE ACESSO</p>
+							<p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 w-36">STATUS</p>
+							<p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 flex-1">DATA DE REGISTRO</p>
+							<p className="font-['Poppins'] font-bold text-xs text-[#202224] opacity-90 w-24">AÇÕES</p>
+						</div>
 
-					{/* Conteúdo */}
-					<div className="flex flex-col overflow-y-auto flex-1">
+						{/* Conteúdo */}
+						<div className="flex flex-col overflow-y-auto flex-1 bg-white">
 						{loading ? (
 							<div className="flex items-center justify-center h-full">
 								<p className="font-['Poppins'] text-sm text-[#202224] opacity-60">Carregando...</p>
@@ -398,13 +369,81 @@ export default function Usuarios() {
 								</div>
 							))
 						)}
+						</div>
+					</div>
+
+					{/* Versão Mobile - Cards */}
+					<div className="flex md:hidden flex-col gap-2 overflow-y-auto flex-1 pb-2 min-h-0">
+						{loading ? (
+							<div className="flex items-center justify-center h-full">
+								<p className="font-['Poppins'] text-sm text-[#202224] opacity-60">Carregando...</p>
+							</div>
+						) : error ? (
+							<div className="flex items-center justify-center h-full">
+								<p className="font-['Poppins'] text-sm text-red-600">{error}</p>
+							</div>
+						) : currentPageItems().length === 0 ? (
+							<div className="flex items-center justify-center h-full">
+								<p className="font-['Poppins'] text-sm text-[#202224] opacity-60">Nenhum usuário encontrado</p>
+							</div>
+						) : (
+							currentPageItems().map((u) => (
+								<div
+									key={u.id}
+									className="bg-white border border-[rgba(6,28,67,0.4)] rounded-lg p-1.5 space-y-1"
+								>
+									{/* Header do Card */}
+									<div className="flex items-center justify-between">
+										<span className="font-['Poppins'] font-bold text-[9px] text-[#202224]">
+											{formatarId(u.id)}
+										</span>
+										<div className="flex items-center gap-1 bg-[#edeefc] rounded px-1.5 py-0.5">
+											<img src={KpiConcluidoBlack} alt="Ativo" className="w-2.5 h-2.5" />
+											<p className="font-['Poppins'] font-medium text-[8px] text-black">Ativo</p>
+										</div>
+									</div>
+
+									{/* Informações */}
+									<div className="space-y-0.5 text-[8px]">
+										<div className="font-['Poppins'] text-[#202224] break-words">
+											<span className="font-medium">{u.nome}</span>
+										</div>
+										<div className="font-['Poppins'] text-[#202224] break-words">
+											<span className="font-medium">{u.email}</span>
+										</div>
+										<div className="font-['Poppins'] text-[#202224] break-words">
+											<span className="font-medium">{u.tipo_perfil}</span>
+										</div>
+										<div className="font-['Poppins'] text-[#202224] break-words">
+											<span className="font-medium">{formatarDataUsuario(u, true)}</span>
+										</div>
+									</div>
+
+									{/* Ações */}
+									<div className="flex items-center gap-1 pt-1 border-t border-[rgba(6,28,67,0.1)]">
+										<button 
+											className="flex-1 flex items-center justify-center bg-[#edeefc] hover:bg-[#dfe0fa] rounded py-0.5 transition-colors"
+											onClick={() => handleEditarClick(u)}
+										>
+											<img src={EditIcon} alt="Editar" className="w-3 h-3" />
+										</button>
+										<button 
+											className="flex-1 flex items-center justify-center bg-[#edeefc] hover:bg-[#dfe0fa] rounded py-0.5 transition-colors"
+											onClick={() => handleDeleteClick(u)}
+										>
+											<img src={DeleteIcon} alt="Deletar" className="w-3 h-3" />
+										</button>
+									</div>
+								</div>
+							))
+						)}
 					</div>
 				</div>
 
 				{/* Paginação */}
-				<div className="flex items-center justify-center gap-2 h-[88px] flex-shrink-0">
-					<button onClick={() => goToPage(paginacao.page - 1)} disabled={paginacao.page === 1} className="flex items-center justify-center h-10 w-12 rounded-xl bg-white border border-[rgba(6,28,67,0.4)] hover:bg-[#edeefc] hover:shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm">
-						<span className="text-[#202224] font-['Poppins'] text-base font-medium">‹</span>
+				<div className="flex items-center justify-center gap-1 sm:gap-2 min-h-[50px] sm:h-[70px] flex-shrink-0 py-2 overflow-x-auto">
+					<button onClick={() => goToPage(paginacao.page - 1)} disabled={paginacao.page === 1} className="flex items-center justify-center h-8 w-10 sm:h-9 sm:w-11 rounded-lg bg-white border border-[rgba(6,28,67,0.4)] hover:bg-[#edeefc] hover:shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm">
+						<span className="text-[#202224] font-['Poppins'] text-sm sm:text-base font-medium">‹</span>
 					</button>
 					{(() => {
 						const usuariosFiltrados = filtrarOrdenar();
@@ -426,7 +465,7 @@ export default function Usuarios() {
 								<button
 									key={1}
 									onClick={() => goToPage(1)}
-									className="flex items-center justify-center h-10 w-12 rounded-xl transition-all font-['Poppins'] text-sm font-medium border shadow-sm bg-white text-[#202224] hover:bg-[#edeefc] hover:shadow-md border-[rgba(6,28,67,0.4)]"
+									className="flex items-center justify-center h-8 w-10 sm:h-9 sm:w-11 rounded-lg transition-all font-['Poppins'] text-xs sm:text-sm font-medium border shadow-sm bg-white text-[#202224] hover:bg-[#edeefc] hover:shadow-md border-[rgba(6,28,67,0.4)]"
 								>
 									1
 								</button>
@@ -434,7 +473,7 @@ export default function Usuarios() {
 							
 							if (paginaInicio > 2) {
 								paginas.push(
-									<span key="dots-start" className="flex items-center justify-center h-10 w-12 text-[#202224] font-['Poppins'] text-sm">
+									<span key="dots-start" className="flex items-center justify-center h-8 w-10 sm:h-9 sm:w-11 text-[#202224] font-['Poppins'] text-xs sm:text-sm">
 										...
 									</span>
 								);
@@ -448,7 +487,7 @@ export default function Usuarios() {
 								<button
 									key={i}
 									onClick={() => goToPage(i)}
-									className={`flex items-center justify-center h-10 w-12 rounded-xl transition-all font-['Poppins'] text-sm font-medium border shadow-sm ${
+									className={`flex items-center justify-center h-8 w-10 sm:h-9 sm:w-11 rounded-lg transition-all font-['Poppins'] text-xs sm:text-sm font-medium border shadow-sm ${
 										isActive 
 											? 'bg-[#edeefc] text-[#202224] border-[rgba(6,28,67,0.4)] shadow-md' 
 											: 'bg-white text-[#202224] hover:bg-[#edeefc] hover:shadow-md border-[rgba(6,28,67,0.4)]'
@@ -463,7 +502,7 @@ export default function Usuarios() {
 						if (paginaFim < totalPages) {
 							if (paginaFim < totalPages - 1) {
 								paginas.push(
-									<span key="dots-end" className="flex items-center justify-center h-10 w-12 text-[#202224] font-['Poppins'] text-sm">
+									<span key="dots-end" className="flex items-center justify-center h-8 w-10 sm:h-9 sm:w-11 text-[#202224] font-['Poppins'] text-xs sm:text-sm">
 										...
 									</span>
 								);
@@ -473,7 +512,7 @@ export default function Usuarios() {
 								<button
 									key={totalPages}
 									onClick={() => goToPage(totalPages)}
-									className="flex items-center justify-center h-10 w-12 rounded-xl transition-all font-['Poppins'] text-sm font-medium border shadow-sm bg-white text-[#202224] hover:bg-[#edeefc] hover:shadow-md border-[rgba(6,28,67,0.4)]"
+									className="flex items-center justify-center h-8 w-10 sm:h-9 sm:w-11 rounded-lg transition-all font-['Poppins'] text-xs sm:text-sm font-medium border shadow-sm bg-white text-[#202224] hover:bg-[#edeefc] hover:shadow-md border-[rgba(6,28,67,0.4)]"
 								>
 									{totalPages}
 								</button>
@@ -482,8 +521,8 @@ export default function Usuarios() {
 						
 						return paginas;
 					})()}
-					<button onClick={() => goToPage(paginacao.page + 1)} disabled={paginacao.page === Math.max(1, Math.ceil(filtrarOrdenar().length / paginacao.limit))} className="flex items-center justify-center h-10 w-12 rounded-xl bg-white border border-[rgba(6,28,67,0.4)] hover:bg-[#edeefc] hover:shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm">
-						<span className="text-[#202224] font-['Poppins'] text-base font-medium">›</span>
+					<button onClick={() => goToPage(paginacao.page + 1)} disabled={paginacao.page === Math.max(1, Math.ceil(filtrarOrdenar().length / paginacao.limit))} className="flex items-center justify-center h-8 w-10 sm:h-9 sm:w-11 rounded-lg bg-white border border-[rgba(6,28,67,0.4)] hover:bg-[#edeefc] hover:shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm">
+						<span className="text-[#202224] font-['Poppins'] text-sm sm:text-base font-medium">›</span>
 					</button>
 				</div>
 			</div>

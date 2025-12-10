@@ -45,43 +45,32 @@ export default function AdicionarEditarModal({
     }
   }, [isOpen, dadosIniciais, modoEdicao, campos]);
 
+  const handleChange = (nome: string, valor: string) => {
+    setFormData((prev: any) => ({ ...prev, [nome]: valor }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       await onSalvar(formData);
-      onClose();
     } catch (error) {
-      console.error('Erro ao salvar:', error);
+      // Pode adicionar tratamento de erro se quiser
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (nome: string, valor: string) => {
-    setFormData((prev: any) => ({ ...prev, [nome]: valor }));
-  };
-
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-gray-200">
-          <h2 className="font-['Poppins'] font-semibold text-lg text-[#202224]">
-            {modoEdicao ? 'Editar' : 'Adicionar'} {titulo}
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
-          >
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 ${isOpen ? '' : 'hidden'}`}>
+      <div className="bg-[#f3f3f5] rounded-2xl w-full max-w-[328px] max-h-[90vh] overflow-y-auto shadow-xl">
+        <div className="sticky top-0 bg-[#f3f3f5] border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+          <h2 className="text-lg font-semibold text-[#0a1c3e]">{modoEdicao ? 'Editar' : 'Adicionar'} {titulo}</h2>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
             <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-5">
+        <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-4">
             {campos.map((campo) => (
               <div key={campo.nome}>
@@ -138,4 +127,5 @@ export default function AdicionarEditarModal({
       </div>
     </div>
   );
+// ...fim do componente
 }

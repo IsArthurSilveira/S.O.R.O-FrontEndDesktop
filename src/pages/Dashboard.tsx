@@ -17,8 +17,6 @@ interface DashboardData {
   tempoMedio: Array<{ tipo: string; tempo: number }>;
 }
 
-
-
 const Dashboard: React.FC = () => {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -120,29 +118,7 @@ const Dashboard: React.FC = () => {
     fetchData();
   }, [filtro]);
 
-  // Bloquear rolagem do mouse e toque enquanto o Dashboard estiver montado
-  useEffect(() => {
-    const preventWheel = (e: WheelEvent) => {
-      e.preventDefault();
-    };
-    const preventTouch = (e: TouchEvent) => {
-      e.preventDefault();
-    };
 
-    // Trava o scroll global visual (remove barra do body)
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    // Impede rolagem via mouse/touch em qualquer container
-    window.addEventListener('wheel', preventWheel, { passive: false });
-    window.addEventListener('touchmove', preventTouch, { passive: false });
-
-    return () => {
-      window.removeEventListener('wheel', preventWheel as EventListener);
-      window.removeEventListener('touchmove', preventTouch as EventListener);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, []);
 
   if (loading) {
     return (
@@ -167,9 +143,7 @@ const Dashboard: React.FC = () => {
   const totalPendentes = data?.status['PENDENTE'] || 0;
   const totalCanceladas = data?.status['CANCELADA'] || 0;
 
-
-
-  // Transformar dados para o gráfico de linha (semana)
+  // Dados para o gráfico de linha (semana)
   const diasSemana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'];
   const dadosSemana = data?.porPeriodo?.slice(-7).map((item, idx) => ({
     dia: diasSemana[idx % 7],
@@ -178,7 +152,7 @@ const Dashboard: React.FC = () => {
   })) || [];
 
   return (
-    <div className="relative w-full h-full overflow-hidden p-3 -mt-6">
+    <div className="relative w-full h-full overflow-y-auto overflow-x-hidden p-3 -mt-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <h1 className="font-semibold text-[14px] text-black">Dashboard</h1>
@@ -198,13 +172,13 @@ const Dashboard: React.FC = () => {
 
       {/* Container ajustável para subir todo o conteúdo */}
       <div className="-mt-0">
-        {/* Grid principal: 2 colunas */}
-        <div className="grid grid-cols-[1fr_280px] gap-2 h-[calc(100vh-120px)]">
+        {/* Grid principal: 2 colunas em desktop, 1 coluna em mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-2 min-h-fit">
           
           {/* Coluna Esquerda */}
-          <div className="flex flex-col gap-2 h-full">
+          <div className="flex flex-col gap-2">
             {/* KPIs */}
-            <div className="flex gap-2 h-[72px]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 min-h-[72px]">
               <KPICard 
                 title="Concluídas" 
                 value={totalConcluidas} 
@@ -228,7 +202,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Tempo médio de conclusão */}
-            <div className="bg-white rounded-[16px] shadow-[0px_0.5px_0.5px_0px_rgba(0,0,0,0.1)] p-2 flex flex-col" style={{ height: '240px' }}>
+            <div className="bg-white rounded-[16px] shadow-[0px_0.5px_0.5px_0px_rgba(0,0,0,0.1)] p-2 flex flex-col min-h-[240px] sm:min-h-[280px]">
             <h3 className="font-medium text-[13px] text-black mb-2">
               Tempo médio de conclusão por tipo de ocorrência
             </h3>
@@ -266,7 +240,7 @@ const Dashboard: React.FC = () => {
           </div>
 
             {/* Total por período */}
-            <div className="bg-white rounded-[16px] shadow-[0px_0.5px_0.5px_0px_rgba(0,0,0,0.1)] p-2 flex flex-col" style={{ height: '268px' }}>
+            <div className="bg-white rounded-[16px] shadow-[0px_0.5px_0.5px_0px_rgba(0,0,0,0.1)] p-2 flex flex-col min-h-[268px] sm:min-h-[300px]">
             <div className="flex items-center gap-2 mb-4">
               <h3 className="font-medium text-[13px] text-black">
                 Total de ocorrências por período
@@ -324,9 +298,9 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Coluna Direita */}
-          <div className="flex flex-col gap-2 h-full w-full">
+          <div className="flex flex-col gap-2">
             {/* Nº de Ocorrências por Município */}
-            <div className="bg-white rounded-[16px] shadow-[0px_0.5px_0.5px_0px_rgba(0,0,0,0.1)] p-2 flex flex-col w-full" style={{ height: '320px' }}>
+            <div className="bg-white rounded-[16px] shadow-[0px_0.5px_0.5px_0px_rgba(0,0,0,0.1)] p-2 flex flex-col w-full min-h-[320px] sm:min-h-[360px]">
               <h3 className="font-medium text-[13px] text-black mb-1">
               Nº de ocorrência por Município
               </h3>
@@ -372,7 +346,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Ocorrências Mais Comuns */}
-            <div className="bg-white rounded-[16px] shadow-[0px_0.5px_0.5px_0px_rgba(0,0,0,0.1)] p-4 flex flex-col w-full" style={{ height: '200x' }}>
+            <div className="bg-white rounded-[16px] shadow-[0px_0.5px_0.5px_0px_rgba(0,0,0,0.1)] p-4 flex flex-col w-full min-h-[240px]">
               <h3 className="font-medium text-[13px] text-black mb-2">
                 Ocorrências mais comuns
               </h3>
@@ -412,7 +386,7 @@ const KPICard: React.FC<{
   value: number;
   icon: string;
 }> = ({ title, value, icon }) => (
-  <div className="bg-white rounded-[16px] flex-1 h-[72px] px-2 py-2 flex items-center gap-2 min-w-0 shadow-sm">
+  <div className="bg-white rounded-[16px] h-[72px] px-2 py-2 flex items-center gap-2 min-w-0 shadow-sm">
     <div className="w-[32px] h-[32px] flex items-center justify-center flex-shrink-0">
       <img src={icon} alt={title} className="w-full h-full" />
     </div>

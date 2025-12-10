@@ -84,17 +84,17 @@ export default function DetalhesOcorrenciaModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-xl sm:rounded-2xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between rounded-t-xl sm:rounded-t-2xl z-10">
           <div>
-            <h2 className="text-xl font-semibold text-[#0a1c3e]">Detalhes da Ocorrência</h2>
-            <p className="text-sm text-gray-500">Ocorrência #{ocorrencia.nr_aviso || 'N/A'}</p>
+            <h2 className="text-lg sm:text-xl font-semibold text-[#0a1c3e]">Detalhes da Ocorrência</h2>
+            <p className="text-xs sm:text-sm text-gray-500">Ocorrência #{ocorrencia.nr_aviso || 'N/A'}</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
           >
             <X className="w-5 h-5 text-gray-500" />
           </button>
@@ -103,12 +103,12 @@ export default function DetalhesOcorrenciaModal({
         {loading ? (
           <div className="p-8 text-center text-gray-500">Carregando detalhes...</div>
         ) : (
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {/* Grid Principal */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Coluna Esquerda - Mapa */}
               <div className="lg:col-span-1">
-                <div className="h-[280px] rounded-xl overflow-hidden border border-gray-200">
+                <div className="h-[200px] sm:h-[280px] rounded-lg sm:rounded-xl overflow-hidden border border-gray-200">
                   <MapView
                     municipio={detalhes?.municipio}
                     bairro={detalhes?.bairro}
@@ -121,12 +121,12 @@ export default function DetalhesOcorrenciaModal({
                 </div>
 
                 {/* Mídias */}
-                <div className="mt-6">
-                  <h3 className="text-sm font-semibold text-[#0a1c3e] mb-3">
+                <div className="mt-4 sm:mt-6">
+                  <h3 className="text-xs sm:text-sm font-semibold text-[#0a1c3e] mb-2 sm:mb-3">
                     Mídias (Fotos e Vídeos)
                   </h3>
                   {midias.length > 0 ? (
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                       {midias.map((midia, i) => (
                         <div
                           key={i}
@@ -152,12 +152,12 @@ export default function DetalhesOcorrenciaModal({
 
               {/* Coluna Direita - Informações */}
               <div className="lg:col-span-2">
-                <h3 className="text-sm font-semibold text-[#0a1c3e] mb-4">
+                <h3 className="text-xs sm:text-sm font-semibold text-[#0a1c3e] mb-3 sm:mb-4">
                   Informações Principais
                 </h3>
 
                 {/* Grid de 2 colunas para as informações */}
-                <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 sm:gap-x-6 gap-y-3 sm:gap-y-4">
                   {/* Status */}
                   <div>
                     <label className="text-xs text-gray-500 uppercase tracking-wide">
@@ -264,11 +264,11 @@ export default function DetalhesOcorrenciaModal({
                 </div>
 
                 {/* Equipes e Viaturas */}
-                <div className="mt-6">
-                  <h3 className="text-sm font-semibold text-[#0a1c3e] mb-3">
+                <div className="mt-4 sm:mt-6">
+                  <h3 className="text-xs sm:text-sm font-semibold text-[#0a1c3e] mb-2 sm:mb-3">
                     Equipes e Viaturas Envolvidas
                   </h3>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                     <div className="bg-gray-50 rounded-lg p-3">
                       <div className="text-xs font-medium text-gray-700">Viatura ABT-01</div>
                       <div className="text-xs text-gray-500 mt-1">
@@ -285,10 +285,10 @@ export default function DetalhesOcorrenciaModal({
                 </div>
 
                 {/* Botão Editar */}
-                <div className="mt-8">
+                <div className="mt-6 sm:mt-8">
                   <button
                     onClick={onEdit}
-                    className="w-full bg-[#4169E1] hover:bg-[#3557c7] text-white font-medium text-sm px-6 py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    className="w-full bg-[#4169E1] hover:bg-[#3557c7] text-white font-medium text-sm px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
                   >
                     <svg
                       className="w-4 h-4"

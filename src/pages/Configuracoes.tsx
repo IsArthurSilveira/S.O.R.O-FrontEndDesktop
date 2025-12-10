@@ -7,7 +7,7 @@ export default function Configuracoes() {
 	const [autoSalvar, setAutoSalvar] = useState(true);
 
 	return (
-		<div className="flex flex-col h-full">
+		<div className="flex flex-col h-full px-2 sm:px-4 md:px-8">
 			<div className="-mt-6 flex flex-col h-full">
 				{/* Título */}
 				<div className="mb-4 mt-[12px]">
@@ -19,8 +19,8 @@ export default function Configuracoes() {
 					</p>
 				</div>
 
-				{/* Layout em Grid - 2 colunas */}
-				<div className="grid grid-cols-2 gap-4 flex-1">
+				{/* Layout em Grid - 2 colunas responsivo */}
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
 					
 					{/* Coluna Esquerda */}
 					<div className="flex flex-col gap-4">
@@ -123,7 +123,7 @@ export default function Configuracoes() {
 					</div>
 
 					{/* Coluna Direita */}
-					<div className="flex flex-col gap-4">
+					<div className="flex flex-col gap-4 mt-0 md:mt-0">
 						
 						{/* Seção: Sistema */}
 						<div className="bg-white dark:bg-[#1a1a1a] border border-[rgba(6,28,67,0.4)] dark:border-[rgba(255,255,255,0.1)] rounded-xl p-5 shadow-sm">

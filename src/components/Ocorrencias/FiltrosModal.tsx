@@ -27,30 +27,30 @@ export default function FiltrosModal({ isOpen, onClose, filtros, onAplicarFiltro
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4" onClick={onClose}>
       <div 
-        className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl"
+        className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
           <div className="flex items-center gap-2">
             <img src={FilterIcon} alt="Filtros" className="w-5 h-5" />
-            <h2 className="font-['Poppins'] font-semibold text-[18px] text-black">Filtros</h2>
+            <h2 className="font-['Poppins'] font-semibold text-base sm:text-[18px] text-black">Filtros</h2>
           </div>
           <button 
             onClick={onClose}
-            className="text-gray-500 hover:text-black transition-colors text-[24px] leading-none"
+            className="text-gray-500 hover:text-black transition-colors text-[24px] leading-none p-1 hover:bg-gray-100 rounded-lg"
           >
             ×
           </button>
         </div>
 
         {/* Filtros */}
-        <div className="flex flex-col gap-4 mb-6">
+        <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
           {/* Status */}
           <div className="flex flex-col gap-2">
-            <label className="font-['Poppins'] font-medium text-[14px] text-[#202224]">
+            <label className="font-['Poppins'] font-medium text-xs sm:text-[14px] text-[#202224]">
               Status
             </label>
             <select
@@ -59,7 +59,7 @@ export default function FiltrosModal({ isOpen, onClose, filtros, onAplicarFiltro
                 ...filtrosLocal, 
                 status: e.target.value as StatusOcorrencia || undefined 
               })}
-              className="px-4 py-2 border border-[rgba(6,28,67,0.4)] rounded-xl font-['Poppins'] text-[14px] outline-none focus:border-[rgba(6,28,67,0.6)]"
+              className="px-3 sm:px-4 py-2 border border-[rgba(6,28,67,0.4)] rounded-xl font-['Poppins'] text-xs sm:text-[14px] outline-none focus:border-[rgba(6,28,67,0.6)]"
             >
               <option value="">Todos</option>
               <option value="PENDENTE">Pendente</option>
@@ -71,42 +71,42 @@ export default function FiltrosModal({ isOpen, onClose, filtros, onAplicarFiltro
 
           {/* Data Início */}
           <div className="flex flex-col gap-2">
-            <label className="font-['Poppins'] font-medium text-[14px] text-[#202224]">
+            <label className="font-['Poppins'] font-medium text-xs sm:text-[14px] text-[#202224]">
               Data Início
             </label>
             <input
               type="date"
               value={filtrosLocal.dataInicio || ''}
               onChange={(e) => setFiltrosLocal({ ...filtrosLocal, dataInicio: e.target.value })}
-              className="px-4 py-2 border border-[rgba(6,28,67,0.4)] rounded-xl font-['Poppins'] text-[14px] outline-none focus:border-[rgba(6,28,67,0.6)]"
+              className="px-3 sm:px-4 py-2 border border-[rgba(6,28,67,0.4)] rounded-xl font-['Poppins'] text-xs sm:text-[14px] outline-none focus:border-[rgba(6,28,67,0.6)]"
             />
           </div>
 
           {/* Data Fim */}
           <div className="flex flex-col gap-2">
-            <label className="font-['Poppins'] font-medium text-[14px] text-[#202224]">
+            <label className="font-['Poppins'] font-medium text-xs sm:text-[14px] text-[#202224]">
               Data Fim
             </label>
             <input
               type="date"
               value={filtrosLocal.dataFim || ''}
               onChange={(e) => setFiltrosLocal({ ...filtrosLocal, dataFim: e.target.value })}
-              className="px-4 py-2 border border-[rgba(6,28,67,0.4)] rounded-xl font-['Poppins'] text-[14px] outline-none focus:border-[rgba(6,28,67,0.6)]"
+              className="px-3 sm:px-4 py-2 border border-[rgba(6,28,67,0.4)] rounded-xl font-['Poppins'] text-xs sm:text-[14px] outline-none focus:border-[rgba(6,28,67,0.6)]"
             />
           </div>
         </div>
 
         {/* Botões */}
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3">
           <button
             onClick={handleLimpar}
-            className="flex-1 px-4 py-2 border border-[rgba(6,28,67,0.4)] rounded-xl font-['Poppins'] font-medium text-[14px] text-[#202224] hover:bg-gray-50 transition-colors"
+            className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 border border-[rgba(6,28,67,0.4)] rounded-xl font-['Poppins'] font-medium text-xs sm:text-[14px] text-[#202224] hover:bg-gray-50 transition-colors"
           >
             Limpar
           </button>
           <button
             onClick={handleAplicar}
-            className="flex-1 px-4 py-2 bg-[rgba(160,237,173,0.6)] border border-[rgba(6,28,67,0.4)] rounded-xl font-['Poppins'] font-medium text-[14px] text-black hover:bg-[rgba(160,237,173,0.8)] transition-colors"
+            className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 bg-[rgba(160,237,173,0.6)] border border-[rgba(6,28,67,0.4)] rounded-xl font-['Poppins'] font-medium text-xs sm:text-[14px] text-black hover:bg-[rgba(160,237,173,0.8)] transition-colors"
           >
             Aplicar
           </button>

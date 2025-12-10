@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 
 interface DeletarModalProps {
@@ -16,40 +16,37 @@ export default function DeletarModal({
   titulo,
   nomeItem
 }: DeletarModalProps) {
+
   const [loading, setLoading] = useState(false);
+
+  // Reseta o loading ao abrir o modal
+  useEffect(() => {
+    if (isOpen) {
+      setLoading(false);
+    }
+  }, [isOpen]);
 
   const handleConfirmar = async () => {
     setLoading(true);
     try {
       await onConfirmar();
-      onClose();
     } catch (error) {
-      console.error('Erro ao deletar:', error);
+      // erro ao deletar (opcional)
     } finally {
       setLoading(false);
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-gray-200">
-          <h2 className="font-['Poppins'] font-semibold text-lg text-[#202224]">
-            Deletar {titulo}
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
-          >
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 ${isOpen ? '' : 'hidden'}`}>
+      <div className="bg-[#f3f3f5] rounded-2xl w-full max-w-[328px] max-h-[90vh] overflow-y-auto shadow-xl">
+        <div className="sticky top-0 bg-[#f3f3f5] border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+          <h2 className="text-lg font-semibold text-[#0a1c3e]">Deletar {titulo}</h2>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
             <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
-
-        {/* Content */}
-        <div className="p-5">
+        <div className="p-6">
           <div className="flex items-start gap-4">
             <div className="p-3 bg-red-50 rounded-lg flex-shrink-0">
               <AlertTriangle className="w-6 h-6 text-red-600" />
@@ -64,7 +61,7 @@ export default function DeletarModal({
             </div>
           </div>
 
-          {/* Botões */}
+          {/* Botões de ação */}
           <div className="flex items-center gap-3 mt-6">
             <button
               type="button"

@@ -26,9 +26,6 @@ const PrivateLayout: React.FC = () => {
     
     // Verifica se estamos na rota do Dashboard
     const isDashboard = location.pathname === '/' || location.pathname === '/dashboard';
-    
-    // RightBar expande quando sidebar colapsa e vice-versa
-    const isRightBarExpanded = !isSidebarExpanded;
 
     if (isLoading) {
         return (
@@ -46,10 +43,22 @@ const PrivateLayout: React.FC = () => {
         setIsRightBarVisible(!isRightBarVisible);
     };
 
-    const contentMargin = isSidebarExpanded ? 'ml-64' : 'ml-20';
+    const handleToggleSidebar = () => {
+        setIsSidebarExpanded(!isSidebarExpanded);
+    };
+
+    const contentMargin = isSidebarExpanded ? 'lg:ml-64' : 'lg:ml-20';
 
     return (
-        <div className="flex min-h-screen bg-background dark:bg-[#0a0a0a] text-foreground dark:text-white">
+        <div className="flex min-h-screen bg-background dark:bg-[#0a0a0a] text-foreground dark:text-white relative">
+            {/* Overlay para mobile quando sidebar está aberta */}
+            {isSidebarExpanded && (
+                <div 
+                    className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+                    onClick={() => setIsSidebarExpanded(false)}
+                />
+            )}
+            
             <Sidebar 
                 expanded={isSidebarExpanded}
                 setExpanded={setIsSidebarExpanded}
@@ -59,13 +68,14 @@ const PrivateLayout: React.FC = () => {
                 <Header 
                     onToggleRightBar={handleToggleRightBar}
                     showRightBarToggle={isDashboard}
+                    onToggleSidebar={handleToggleSidebar}
                 />
-                <main className={`p-6 transition-all duration-300 ${isDashboard && isRightBarVisible && isRightBarExpanded ? 'mr-64' : ''}`}>
+                <main className="p-3 sm:p-4 md:p-6">
                     <Outlet /> 
                 </main>
             </div>
 
-            {/* RightBar - Visível apenas no Dashboard */}
+            {/* RightBar - Visível apenas no Dashboard - Posicionado de forma absoluta */}
             {isDashboard && (
                 <RightBar 
                     isVisible={isRightBarVisible}
